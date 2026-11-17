@@ -205,7 +205,11 @@ const hsh=location.hash.slice(1);
 if(hsh.startsWith("png-")){mode=hsh.slice(4);document.documentElement.dataset.theme="light";
  document.querySelectorAll(".warn,.kpis,.tabs,.rank,#mode,.sub").forEach(e=>e.style.display="none");
  $("h1").textContent=(mode==="ac"?"Активированный уголь":"Кальянные кубики")+": куда выгоднее продавать";
- $(".wrap").style.maxWidth="1880px";}
+ $(".wrap").style.maxWidth="1880px";
+ // 17.11.2026: для картинки — без боковой панели и с крупной легендой
+ $("#side").style.display="none";$(".maprow").style.gridTemplateColumns="1fr";
+ document.querySelectorAll(".legend").forEach(e=>{e.style.fontSize="22px";e.style.gap="12px"});
+ document.querySelectorAll(".legend i,.legend u").forEach(e=>{e.style.width="26px";e.style.height="18px"});}
 else{let t=null;try{t=localStorage.getItem("bp-tab")}catch(_){ }
  if(t){const b=document.querySelector(`#tabs button[data-p="${t}"]`);if(b)b.click();}}
 paint();drawA();drawC();
