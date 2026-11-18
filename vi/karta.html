@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+
+<html lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>Định An · bản đồ trực tiếp</title>
+<meta content="cover" name="claude:viewport-fit-sides"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&amp;family=Golos+Text:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet"/>
+<style>
+
+:root {
+  --ground:#0B0D0F; --panel:#13161A; --raise:#1B1F24; --line:#2A2F36;
+  --paper:#EEEAE0; --muted:#9A9F98; --ember:#F0935A; --heat:#FF6A2B; --gold:#F2C14E; --steam:#7FC8D8; --leaf:#74C27A;
+  --display:"Oswald", "Arial Narrow", Impact, sans-serif;
+  --text:"Golos Text", "Helvetica Neue", Arial, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  color-scheme: dark;
+}
+* { box-sizing:border-box; }
+html, body { margin:0; } body { background:var(--ground); color:var(--paper); font-family:var(--text); font-size:14px; }
+body { padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px));
+  padding-block:max(14px, env(safe-area-inset-top, 0px)) max(24px, env(safe-area-inset-bottom, 0px)); }
+.wrap { margin:0 auto; display:flex; flex-direction:column; gap:14px; }
+header { display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:12px 20px; }
+.eyebrow { font-family:var(--display); font-weight:600; font-size:12px; letter-spacing:.22em; text-transform:uppercase; color:var(--gold); }
+h1 { margin:2px 0 0; font-family:var(--display); font-weight:700; font-style:italic; font-size:clamp(34px, 6vw, 64px);
+  line-height:.95; letter-spacing:.01em; text-transform:uppercase; text-wrap:balance;
+  color:var(--paper); text-shadow:3px 3px 0 #000, 0 0 24px rgba(240,147,90,.25); }
+.sub { margin-top:6px; color:var(--muted); font-size:13px; max-width:60ch; }
+.tools { display:flex; flex-wrap:wrap; gap:8px; align-items:stretch; }
+.clock { border:1px solid var(--line); background:var(--panel); padding:6px 14px; display:flex; align-items:baseline; gap:10px; }
+.clock small { font-family:var(--display); color:var(--muted); font-size:13px; letter-spacing:.08em; text-transform:uppercase; }
+.clock b { font-family:var(--display); font-size:28px; font-weight:600; font-variant-numeric:tabular-nums; }
+.clock i { font-style:normal; font-family:var(--display); font-size:12px; color:var(--gold); letter-spacing:.1em; }
+.btn { font-family:var(--display); font-weight:600; font-size:14px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--paper); background:var(--panel); border:1px solid var(--line); padding:8px 14px; cursor:pointer; min-height:40px; }
+.btn:hover { border-color:var(--muted); }
+.btn.on { background:var(--gold); color:#121212; border-color:var(--gold); }
+.btn:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+.main { display:grid; grid-template-columns:minmax(0, 1fr) clamp(320px, 22vw, 420px); gap:14px; }
+.mapbox { position:relative; border:1px solid var(--line); background:#0F1412; height:calc(100vh - 150px); min-height:480px; overflow:hidden; touch-action:none; }
+#map { position:absolute; inset:0; width:100%; height:100%; display:block; cursor:grab; }
+#map.drag { cursor:grabbing; }
+.mapbox:fullscreen { height:100vh; border:0; }
+#mclock { position:absolute; right:12px; top:10px; display:none; font-family:var(--display); font-size:26px; font-weight:600; font-variant-numeric:tabular-nums;
+  background:rgba(11,13,15,.82); border:1px solid var(--line); padding:4px 12px; pointer-events:none; }
+.mapbox:fullscreen #mclock { display:block; }
+#radar { position:absolute; right:12px; bottom:12px; width:150px; height:150px; border-radius:50%; pointer-events:none;
+  box-shadow:0 0 0 3px #000, 0 0 0 5px #3A3F46, 0 8px 20px rgba(0,0,0,.6); }
+.zoom { position:absolute; left:10px; bottom:10px; display:flex; flex-direction:column; gap:6px; }
+.zoom .btn { min-height:36px; width:40px; padding:0; font-size:18px; }
+.mapnote { position:absolute; left:10px; top:10px; font-family:var(--display); font-size:11.5px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--muted); background:rgba(11,13,15,.78); padding:5px 9px; border:1px solid var(--line); pointer-events:none; }
+#card { position:absolute; left:10px; top:44px; width:min(320px, calc(100% - 20px)); background:rgba(19,22,26,.96); border:1px solid var(--line);
+  border-left:4px solid var(--ember); padding:12px 14px; }
+#card .z { font-family:var(--display); font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); }
+#card h3 { margin:3px 0 4px; font-family:var(--display); font-size:21px; font-weight:600; }
+#card .a { font-weight:600; font-size:13px; color:var(--gold); margin-bottom:6px; }
+#card p { margin:0; font-size:13px; line-height:1.45; color:#D6D2C7; }
+#card .live { margin-top:8px; font-family:var(--mono); font-size:12px; color:var(--steam); }
+#card .x { position:absolute; right:6px; top:4px; background:none; border:0; color:var(--muted); font-size:20px; cursor:pointer; padding:4px 8px; }
+aside { display:flex; flex-direction:column; gap:14px; min-width:0; }
+.panel { background:var(--panel); border:1px solid var(--line); }
+.panel h2 { margin:0; padding:9px 14px; font-family:var(--display); font-weight:600; font-size:14px; letter-spacing:.16em; text-transform:uppercase;
+  background:var(--raise); border-bottom:1px solid var(--line); display:flex; justify-content:space-between; gap:10px; }
+.panel h2 span { color:var(--muted); font-weight:500; letter-spacing:.08em; }
+.tiles { display:grid; grid-template-columns:1fr 1fr; }
+.tile { padding:11px 14px; border-right:1px solid var(--line); border-bottom:1px solid var(--line); min-width:0; }
+.tile:nth-child(2n) { border-right:0; }
+.tile b { display:block; font-family:var(--display); font-size:26px; font-weight:600; font-variant-numeric:tabular-nums; line-height:1.1; }
+.tile span { font-size:12px; color:var(--muted); }
+.tile.hi b { color:var(--ember); }
+.tile.wide { grid-column:1 / -1; border-right:0; }
+.tile.wide b { color:var(--leaf); }
+.shift { padding:10px 14px; font-size:13px; display:flex; flex-direction:column; gap:6px; }
+.shift .row { display:flex; justify-content:space-between; gap:10px; }
+.shift .row em { font-style:normal; color:var(--muted); }
+.pill { display:inline-block; font-family:var(--display); font-size:12px; letter-spacing:.08em; padding:1px 8px; border:1px solid currentColor; }
+.ok { color:var(--leaf); } .warn { color:var(--gold); } .hot { color:var(--heat); }
+#log { list-style:none; margin:0; padding:6px 0; max-height:300px; overflow-y:auto; }
+#log li { display:grid; grid-template-columns:48px 1fr; gap:8px; padding:5px 14px; font-size:12.5px; line-height:1.4; border-bottom:1px solid rgba(255,255,255,.04); }
+#log li time { font-family:var(--mono); color:var(--gold); font-size:12px; }
+#log li.new { background:rgba(240,147,90,.12); }
+.people h2 .onb { color:var(--leaf); font-weight:600; letter-spacing:.1em; }
+.psum { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); border-bottom:1px solid var(--line); }
+.psum div { padding:8px 12px; border-right:1px solid var(--line); min-width:0; }
+.psum div:last-child { border-right:0; }
+.psum b { display:block; font-family:var(--display); font-size:22px; font-weight:600; font-variant-numeric:tabular-nums; line-height:1.1; }
+.psum span { font-size:11.5px; color:var(--muted); }
+.pfilt { display:flex; gap:6px; padding:8px 12px; border-bottom:1px solid var(--line); }
+.pfilt .btn { font-size:12px; min-height:30px; padding:2px 10px; }
+.plist { max-height:430px; overflow-y:auto; }
+.pgrp { position:sticky; top:0; z-index:1; display:flex; justify-content:space-between; gap:8px; padding:5px 12px; background:var(--raise);
+  font-family:var(--display); font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); border-bottom:1px solid var(--line); }
+.prow { display:grid; grid-template-columns:28px minmax(0, 1fr); gap:3px 10px; align-items:start; width:100%; padding:7px 12px; text-align:left;
+  background:none; color:inherit; border:0; border-bottom:1px solid var(--line); cursor:pointer; font:inherit; }
+.prow:hover { background:var(--raise); }
+.prow.sel { background:var(--raise); box-shadow:inset 3px 0 0 var(--gold); }
+.prow:focus-visible { outline:2px solid var(--gold); outline-offset:-2px; }
+.prow svg { display:block; }
+.prow .nm { margin-right:6px; font-family:var(--display); font-size:15px; font-weight:600; line-height:1.15; overflow-wrap:anywhere; }
+.prow .rl { display:block; font-size:12px; color:var(--muted); line-height:1.3; }
+.prow svg { grid-row:1 / span 2; margin-top:2px; }
+.prow .st { grid-column:2; display:flex; flex-wrap:wrap; align-items:center; gap:2px 10px; font-size:11.5px; line-height:1.35; }
+.prow .st .pill { font-size:11px; padding:0 6px; }
+.prow .st .tm { font-family:var(--mono); color:var(--muted); font-size:11px; }
+.pill.off { color:var(--muted); }
+.prow[hidden], .pgrp[hidden] { display:none; }
+.charts { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:14px; }
+@media (max-width: 1400px) { .charts { grid-template-columns:repeat(2, minmax(0, 1fr)); } }
+.chart { height:190px; width:100%; display:block; cursor:crosshair; }
+.charts .panel { position:relative; }
+.ctip { position:absolute; top:44px; z-index:3; min-width:190px; max-width:260px; padding:8px 10px; background:var(--panel); border:1px solid var(--line);
+  border-left:3px solid var(--gold); box-shadow:0 6px 18px rgba(0,0,0,.18); font-size:12px; line-height:1.4; pointer-events:none; display:flex; flex-direction:column; gap:1px; }
+.ctip[hidden] { display:none; }
+.ctip b { font-family:var(--display); font-size:13px; letter-spacing:.06em; text-transform:uppercase; }
+.ctip .v { font-family:var(--display); font-size:17px; font-weight:600; }
+.ctip span { color:var(--muted); } .ctip .v { color:var(--paper); } .ctip .n { font-family:var(--mono); font-size:11px; }
+.foot { color:var(--muted); font-size:12px; line-height:1.5; max-width:110ch; }
+@media (max-width: 1000px) {
+  .main { grid-template-columns:minmax(0, 1fr); }
+  .charts { grid-template-columns:minmax(0, 1fr); }
+  .mapbox { height:clamp(380px, 112vw, 64vh); min-height:0; }
+  #radar { width:84px; height:84px; right:8px; bottom:8px; }
+  .zoom { left:6px; bottom:6px; gap:4px; } .zoom .btn { min-height:32px; width:34px; }
+  .mapnote { font-size:10px; }
+}
+
+body.light { --ground:#EEF0EA; --panel:#FFFFFF; --raise:#F2F3EE; --line:#D6DAD0; --paper:#1D2326; --muted:#5D655F;
+  --ember:#C8571F; --gold:#9A6A00; --steam:#1F6F84; --leaf:#2E7D3A; color-scheme: light; }
+body.light h1 { text-shadow:2px 2px 0 rgba(0,0,0,.12); }
+body.light .btn.on { background:#1D2326; color:#FFFFFF; border-color:#1D2326; }
+body.light .mapbox { background:#D3D6D0; }
+body.light #card, body.light .mapnote, body.light #mclock { background:rgba(255,255,255,.95); }
+body.light #card p { color:#323A3E; }
+body.light #log li { border-bottom-color:rgba(0,0,0,.06); }
+body.light .clock i { color:var(--ember); }
+@media (prefers-reduced-motion: reduce) { #log li.new { background:none; } }
+</style>
+<link href="manifest.webmanifest" rel="manifest"/><meta content="#1E2124" name="theme-color"/><link href="img/icon-180.png" rel="apple-touch-icon"/><meta content="yes" name="apple-mobile-web-app-capable"/><meta content="yes" name="mobile-web-app-capable"/><meta content="VIETCOCO" name="apple-mobile-web-app-title"/><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/></head>
+<body>
+<div class="wrap">
+<header>
+<div>
+<div class="eyebrow">Than gáo dừa · Việt Nam · KKT Định An</div>
+<h1>Nhà máy Định An</h1>
+<div class="sub">Bản đồ trực tiếp của nhà máy: giờ Việt Nam, sản xuất chạy theo định mức của mô hình tài chính. Nhà máy đang được xây dựng — đây là mô phỏng, không phải dữ liệu từ cảm biến.</div>
+</div>
+<div class="tools">
+<div class="clock"><small id="cDate">—</small><b id="cTime">--:--:--</b><i id="cSpeed">TRỰC TIẾP</i></div>
+<button class="btn on" data-s="1" id="s1">Thời gian thực</button>
+<button class="btn" data-s="60" id="s60">Một giờ trong một phút</button>
+<button class="btn" data-s="600" id="s600">Một ngày trong 2,4 phút</button>
+<button class="btn" id="bNight" title="Tối dần vào ban đêm theo giờ Việt Nam">Đêm theo giờ thực</button>
+<button class="btn" id="bTheme">Giao diện tối</button>
+</div>
+</header>
+<div class="main">
+<div class="mapbox" id="mapbox">
+<canvas aria-label="Bản đồ nhà máy từ trên cao: xưởng không mái, lò kèm nhiệt độ, sà lan, xe xúc, xe tải và công nhân theo ca" id="map"></canvas>
+<div class="mapnote">Kéo — di chuyển · con lăn hoặc hai ngón — phóng to · nhấn vào xưởng</div>
+<div class="zoom"><button aria-label="Phóng to" class="btn" id="zIn">+</button><button aria-label="Thu nhỏ" class="btn" id="zOut">−</button><button aria-label="Toàn bộ mặt bằng" class="btn" id="zAll">⌂</button><button aria-label="Toàn màn hình" class="btn" id="zFull" title="Toàn màn hình">⛶</button></div>
+<canvas aria-hidden="true" id="radar"></canvas>
+<div id="mclock">--:--</div>
+<div hidden="" id="card"><button aria-label="Đóng" class="x" id="cardX">×</button><div class="z" id="cZ"></div><h3 id="cT"></h3><div class="a" id="cA"></div><p id="cP"></p><div class="live" id="cL"></div></div>
+</div>
+<aside id="side">
+<section class="panel"><h2>Hôm nay <span id="todayNote">từ 00:00</span></h2>
+<div class="tiles">
+<div class="tile hi"><b id="tAC">0</b><span>tấn than hoạt tính</span></div>
+<div class="tile"><b id="tBags">0</b><span>bao jumbo 500 kg</span></div>
+<div class="tile"><b id="tShell">0</b><span>tấn gáo dừa từ sà lan</span></div>
+<div class="tile"><b id="tCubes">0</b><span>tấn than shisha</span></div>
+<div class="tile"><b id="tBbq">0</b><span>tấn than BBQ ép viên</span></div>
+<div class="tile"><b id="tVin">0</b><span id="tVinS">tấn giấm gỗ</span></div>
+<div class="tile"><b id="tCont">0</b><span>container ra cảng</span></div>
+<div class="tile hi"><b id="tRev">$0</b><span>doanh thu trong ngày</span></div>
+<div class="tile hi wide"><b id="tEb">$0</b><span id="tEbS">EBITDA trong ngày</span></div>
+</div>
+</section>
+<section class="panel people"><h2>Người trong nhà máy <span class="onb" id="pOn">đang làm ca: 0</span></h2>
+<div class="psum"><div><b id="pWork">0</b><span>trong xưởng</span></div><div><b id="pOff">0</b><span>ở văn phòng</span></div><div><b id="pAll">0</b><span>trong danh sách: 4 tổ và văn phòng</span></div></div>
+<div class="pfilt"><button class="btn on" id="pfNow">Đang làm ca</button><button class="btn" id="pfAll">Tất cả</button></div>
+<div class="plist" id="plist"></div>
+</section>
+<section class="panel"><h2>Ca <span id="shName">—</span></h2>
+<div class="shift">
+<div class="row"><em>Trong nhà máy</em><b id="shPeople">—</b></div>
+<div class="row"><em>Cacbon hóa</em><span class="pill hot" id="shCarb">5/5 · THT 500–600 °C · K1 550–700 °C</span></div>
+<div class="row"><em>Hoạt hóa bằng hơi nước</em><span class="pill hot" id="shAct">6/6 · 850–1.000 °C</span></div>
+<div class="row"><em>Bến</em><span class="pill" id="shWharf">—</span></div>
+<div class="row"><em>Kho than hoạt tính</em><b id="shStock">—</b></div>
+<div class="row"><em>Bồn giấm gỗ</em><b id="shTank">—</b></div>
+</div>
+</section>
+<section class="panel"><h2>Nhật ký ca <span>diễn biến</span></h2><ul id="log"></ul></section>
+</aside>
+</div>
+<div class="charts">
+<section class="panel"><h2>Than hoạt tính <span>tấn mỗi ngày</span></h2><canvas aria-label="Cột: số tấn than hoạt tính được đóng gói mỗi ngày" class="chart" id="chAC"></canvas></section>
+<section class="panel"><h2>Gáo dừa từ sà lan <span>tấn mỗi ngày</span></h2><canvas aria-label="Cột: số tấn gáo dừa được nhận mỗi ngày" class="chart" id="chSh"></canvas></section>
+<section class="panel"><h2>Than shisha <span>tấn mỗi ngày</span></h2><canvas aria-label="Cột: số tấn than shisha được sản xuất mỗi ngày" class="chart" id="chCu"></canvas></section>
+<section class="panel"><h2>Than BBQ ép viên <span>tấn mỗi ngày</span></h2><canvas aria-label="Cột: số tấn than BBQ ép viên được sản xuất mỗi ngày" class="chart" id="chBq"></canvas></section>
+</div>
+<div class="foot" id="foot"></div>
+</div>
+<script>
+"use strict";
+const D = {"scene": [{"k": "canopy", "id": "shed_b1", "x": 8, "y": 8, "w": 30, "d": 36, "h": 8, "c": "#E9B872", "piles": [[15, 14, 5, 3.6], [27, 14, 5, 3.2], [14, 26, 5, 3.8], [15, 37, 4.5, 3.0], [30, 24, 4, 2.6], [29, 36, 4, 2.4]]}, {"k": "tanks", "id": "tanks", "x": 42, "y": 8, "w": 21, "d": 18, "c": "#6FB6E8"}, {"k": "box", "id": "purif", "x": 47, "y": 30, "w": 16, "d": 14, "h": 7, "c": "#A9D3F0"}, {"k": "cyl", "id": "purif", "cx": 44.3, "cy": 40, "r": 1.3, "h": 14, "c": "#B9C4CE"}, {"k": "cyl", "id": "purif", "cx": 44.3, "cy": 34, "r": 1.3, "h": 11, "c": "#B9C4CE"}, {"k": "stack", "id": "hall_b1", "cx": 61.7, "cy": 48.1, "r": 1.1, "h": 27}, {"k": "hall", "id": "hall_b1", "x": 8, "y": 52, "w": 50, "d": 66, "h": 11, "rh": 4, "ridge": "y", "c": "#4F8FD6", "ds": [8, 34], "dw": [14, 44]}, {"k": "hall", "id": "fg_b1", "x": 8, "y": 121, "w": 50, "d": 10, "h": 7.5, "rh": 2, "ridge": "x", "c": "#63B97A", "ds": [10, 32]}, {"k": "canopy", "id": "shed_au", "x": 72, "y": 8, "w": 60, "d": 40, "h": 9, "c": "#E9B872", "piles": [[80, 15, 6, 4.2], [95, 14, 6, 4.4], [110, 15, 6, 4.0], [124, 14, 5, 3.4], [79, 29, 6, 4.4], [79, 41, 5, 3.6], [97, 30, 5, 3.0], [112, 32, 6, 3.8], [124, 34, 5, 3.2], [100, 42, 4, 2.6]]}, {"k": "hall", "id": "carb", "x": 72, "y": 56, "w": 60, "d": 44, "h": 12, "rh": 4, "ridge": "x", "c": "#F0935A", "ds": [10, 27, 44], "dw": [8, 28]}, {"k": "cyl", "id": "carb", "cx": 80, "cy": 54, "r": 0.8, "h": 14, "c": "#C9CED4"}, {"k": "cyl", "id": "carb", "cx": 94.5, "cy": 54, "r": 0.8, "h": 14, "c": "#C9CED4"}, {"k": "cyl", "id": "carb", "cx": 109, "cy": 54, "r": 0.8, "h": 14, "c": "#C9CED4"}, {"k": "cyl", "id": "carb", "cx": 123.5, "cy": 54, "r": 0.8, "h": 14, "c": "#C9CED4"}, {"k": "hall", "id": "act", "x": 140, "y": 56, "w": 52, "d": 44, "h": 17, "rh": 4, "ridge": "x", "c": "#E2643A", "ds": [8, 36], "dw": [10, 28]}, {"k": "hall", "id": "pack_au", "x": 140, "y": 106, "w": 52, "d": 20, "h": 9, "rh": 2.5, "ridge": "x", "c": "#63B97A", "ds": [8, 24, 40], "dw": [7]}, {"k": "box", "id": "boiler", "x": 140, "y": 30, "w": 25, "d": 18, "h": 10, "c": "#B8C2CC"}, {"k": "stack", "id": "boiler", "cx": 136.8, "cy": 39.8, "r": 1.4, "h": 34}, {"k": "cyl", "id": "cooling", "cx": 174.5, "cy": 39, "r": 5, "h": 8, "c": "#AEB9C4"}, {"k": "canopy", "id": "bbq", "x": 140, "y": 8, "w": 34, "d": 18, "h": 7, "c": "#F2C94C", "pc": "#2E2E2E", "piles": [[147, 12, 3.4, 2.2], [158, 12, 3.4, 2.4], [168, 12, 3.0, 2.0], [146, 21, 3, 2.0], [160, 21, 3, 2.0]]}, {"k": "los", "id": "los", "x": 178, "y": 8, "w": 16, "d": 20}, {"k": "hall", "id": "workshop", "x": 106, "y": 106, "w": 28, "d": 18, "h": 7, "rh": 2.2, "ridge": "x", "c": "#9AA5B1", "ds": [4, 16]}, {"k": "box", "id": "substation", "x": 72, "y": 106, "w": 16, "d": 12, "h": 5, "c": "#B8C2CC"}, {"k": "pool", "id": "pond", "x": 91, "y": 106, "w": 12, "d": 12}, {"k": "office", "id": "office", "x": 72, "y": 129, "w": 30, "d": 13, "h": 8, "c": "#F2F5F8"}, {"k": "weigh", "id": "weigh", "x": 176, "y": 132, "w": 18, "d": 10}], "info": {"shed_b1": ["Mái che gáo dừa Khối 1", "Khối 1", "≈1.100 m²", "Cạnh bến: quãng đường ngắn từ sà lan. Dự trữ gáo dừa khoảng hai tuần."], "hall_b1": ["Xưởng Khối 1", "Khối 1", "50 × 66 m ≈ 3.300 m²", "Than thô đến bằng băng tải từ xưởng cacbon hóa. Tại đây có máy nghiền và máy trộn, máy ép than shisha, hầm sấy, phân loại, đóng gói và xưởng in. 330 tấn than shisha mỗi tháng."], "fg_b1": ["Kho than shisha thành phẩm", "Khối 1", "≈500 m²", "Gần cổng: container từ đây ra đường của khu công nghiệp."], "tanks": ["Bồn chứa giấm gỗ", "Khối 1", "≈380 m²", "Cạnh cụm ngưng tụ, có bờ bao."], "purif": ["Tinh chế giấm gỗ", "Khối 1", "≈290 m²", "Cạnh bồn chứa; vận hành từ T25."], "shed_au": ["Mái che gáo dừa than hoạt tính", "Than hoạt tính", "≈2.400 m²", "Cạnh bến. Cùng mái che Khối 1 giữ dự trữ ≈3.400 tấn."], "carb": ["Xưởng cacbon hóa và nghiền", "Than hoạt tính", "60 × 44 m ≈ 2.640 m²", "Năm lò cacbon hóa giống nhau: dây chuyền số 1–4 cho than thô để hoạt hóa (500–600 °C), lò số 5 — than cho than shisha (550–700 °C). Khí từ tất cả các lò đi qua bộ ngưng tụ: giấm gỗ thô được gom vào ống góp chung và theo đường ống về bồn chứa. Máy nghiền và sàng 6 và 12 mesh."], "act": ["Xưởng hoạt hóa", "Than hoạt tính", "52 × 44 m ≈ 2.290 m²", "Sáu lò hoạt hóa bằng hơi nước ở 850–1.000°C, làm nguội, sàng 6×12. Nhịp nhà cao."], "pack_au": ["Đóng gói và kho than hoạt tính", "Than hoạt tính", "≈1.040 m²", "Đóng bao jumbo 500 kg, kho đủ ≈2 tuần xuất hàng, phòng thí nghiệm KCS."], "boiler": ["Lò hơi và xử lý nước", "Than hoạt tính", "≈450 m²", "Cạnh xưởng hoạt hóa: đường ống hơi ngắn. Nhiệt — từ đốt khí nhiệt phân."], "cooling": ["Tháp giải nhiệt", "Than hoạt tính", "—", "Làm mát nước tuần hoàn."], "bbq": ["Than BBQ ép viên", "Than hoạt tính", "≈610 m²", "Mái che cạnh khu nghiền: than vụn được đưa đến đây."], "los": ["Xử lý nước thải cục bộ", "Than hoạt tính", "≈320 m²", "Ở điểm thấp nhất của lô đất, cạnh cửa xả vào mạng lưới của khu công nghiệp."], "workshop": ["Xưởng sửa chữa và phụ tùng", "Khu chung", "≈500 m²", "Giữa các xưởng."], "substation": ["Trạm biến áp", "Khu chung", "—", "Cạnh điểm đấu nối lưới của khu công nghiệp."], "pond": ["Bể nước chữa cháy (PCCC)", "Khu chung", "—", "Dự trữ nước chữa cháy."], "office": ["Văn phòng, phòng thí nghiệm, nhà ăn, phòng thay đồ", "Khu chung", "≈720 m², 2 tầng", "Cạnh cổng, xa các xưởng có lửa."], "villa": ["Nhà khách", "Khu chung", "≈220 m², 2 tầng", "Cho khách hàng, đối tác và chuyên gia đến làm việc: từ tháp quan sát và ban công nhìn thấy mọi xưởng. Việc lưu trú trong khu công nghiệp cần thỏa thuận với công ty quản lý."], "weigh": ["Trạm cân", "Khu chung", "—", "Mỗi lô gáo dừa và mỗi lô xuất hàng đều được cân."], "wharf": ["Bến", "Sông", "—", "Sà lan chở gáo dừa: 1–2 chuyến mỗi ngày khi chạy hết công suất. Băng tải đưa nguyên liệu đến các mái che."], "gate": ["Cổng", "Đường khu công nghiệp", "—", "Thành phẩm đi bằng container, đây cũng là lối vào của nhân viên."]}, "col": {"raw": "#E9B872", "b1": "#4F8FD6", "ac": "#F0935A", "act": "#E2643A", "fg": "#63B97A", "util": "#9AA5B1", "office": "#F2F5F8", "liq": "#6FB6E8", "bbq": "#F2C94C"}, "acDay": 27.397260273972602, "cubeDay": 10.849315068493151, "cubeMonth": 330, "vinDay": 10.849315068493151, "refDay": 0.9863013698630136, "refMonth": 30, "bbqDay": 4.7647409172126265, "bbqMonth": 144.92753623188406, "priceWv": 350, "priceRef": 900, "priceBbq": 550, "revYear": 40272521.73913044, "ebYear": 20326989.9194847, "ebK": {"b1": 0.46254011661328726, "ac": 0.5162585228819282, "bbq": 0.46216936363636363, "wvr": 0.6363636363636364}, "shellB1": 44.200913242009136, "shellAU": 220.58985727836233, "priceAC": 3100, "priceCube": 1700, "priceShell": 100};
+const $ = id => document.getElementById(id);
+const fmt = (x, d = 0) => x.toLocaleString("ru-RU", { minimumFractionDigits: d, maximumFractionDigits: d });
+const rnd = a => { const x = Math.sin(a * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+const plural = (n, one, few, many) => { const a = n % 10, b = n % 100; return a === 1 && b !== 11 ? one : a >= 2 && a <= 4 && (b < 12 || b > 14) ? few : many; };
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+
+
+const TZ = 7 * 3600e3, DAY = 864e5;
+let speed = 1, simBase = Date.now(), realBase = performance.now(), anim = 0, lastReal = performance.now();
+const simNow = () => simBase + (performance.now() - realBase) * speed;
+function setSpeed(s) { simBase = simNow(); realBase = performance.now(); speed = s;
+  document.querySelectorAll("[data-s]").forEach(b => b.classList.toggle("on", +b.dataset.s === s));
+  $("cSpeed").textContent = s === 1 ? "TRỰC TIẾP" : "×" + s; }
+document.querySelectorAll("[data-s]").forEach(b => b.addEventListener("click", () => setSpeed(+b.dataset.s)));
+$("bTheme").addEventListener("click", () => { THEME = THEME === "light" ? "dark" : "light"; store.set("dinhan-theme", THEME); applyTheme(); });
+$("bNight").addEventListener("click", () => { NIGHT = !NIGHT; store.set("dinhan-night", NIGHT ? "1" : "0"); applyTheme(); });
+{ const m = location.hash.match(/^#t(\d{1,2})(\d\d)?$/);        
+  if (m) simBase = Math.floor((simBase + TZ) / DAY) * DAY - TZ + (+m[1] + (+(m[2] || 0)) / 60) * 36e5; }
+const dayIdx = ms => Math.floor((ms + TZ) / DAY);
+const todH = ms => ((ms + TZ) % DAY) / 36e5;                 
+const hhmm = h => String(Math.floor(h) % 24).padStart(2, "0") + ":" + String(Math.floor((h % 1) * 60)).padStart(2, "0");
+const dayF = (d, k) => 0.93 + 0.14 * rnd(d * 7.31 + k);       
+
+
+
+const BARGES = [
+  { id: "a1", name: "Mê Kông-7", t0: 5.4, x: 102, share: 0.5, to: "au" },
+  { id: "b1", name: "Bến Tre-2", t0: 9.2, x: 24, share: 1, to: "b1" },
+  { id: "a2", name: "Trà Vinh-4", t0: 13.4, x: 102, share: 0.5, to: "au" },
+];
+const B_IN = 0.7, B_UNLOAD = 3, B_OUT = 0.7;
+
+const TRUCKS = [
+  { id: "t1", t0: 8.5, kind: "au", plate: "84C-217.45", c: "#2F6FC4" },
+  { id: "t2", t0: 12.5, kind: "b1", plate: "84C-305.18", c: "#C0392B" },
+  { id: "t3", t0: 16.5, kind: "au", plate: "84C-119.62", c: "#1E8449" },
+  { id: "t4", t0: 10.5, kind: "bbq", plate: "84C-402.77", c: "#B7791F" },
+  { id: "t5", t0: 15.2, kind: "wv", plate: "84C-088.31", c: "#C9CED4" },
+];
+const T_IN = 0.35, T_LOAD = 1.6, T_OUT = 0.35;
+const SHIFTS = [["sáng", 6, 14], ["chiều", 14, 22], ["đêm", 22, 30]];
+
+
+const BRIG = ["A", "B", "C", "D"], OFF = 4;
+const crewOn = (slot, day) => (((day % 4) + 4) % 4) === slot ? 3 : slot;   
+const shiftAt = h => h >= 6 && h < 14 ? 0 : h >= 14 && h < 22 ? 1 : 2;
+const maintKiln = d => d % 6;                                  
+
+function bargeState(b, h, d) {
+  const t = h - b.t0, tons = (b.to === "au" ? D.shellAU : D.shellB1) * b.share * dayF(d, b.id === "a1" ? 3 : b.id === "a2" ? 4 : 5);
+  if (t < 0 || t > B_IN + B_UNLOAD + B_OUT) return { on: false, tons, got: t < 0 ? 0 : tons };
+  if (t < B_IN) return { on: true, x: 260 - (260 - b.x) * (t / B_IN), y: -27, ph: "in", tons, got: 0, k: 1 };
+  if (t < B_IN + B_UNLOAD) { const k = (t - B_IN) / B_UNLOAD; return { on: true, x: b.x, y: -22, ph: "unload", tons, got: tons * k, k: 1 - k }; }
+  const k = (t - B_IN - B_UNLOAD) / B_OUT; return { on: true, x: b.x - (b.x + 90) * k, y: -27, ph: "out", tons, got: tons, k: 0 };
+}
+
+const TP = {
+  au: [[-80, 157.5], [160, 157.5], [160, 146], [160, 133]],
+  b1: [[-80, 157.5], [160, 157.5], [160, 146], [40, 146], [40, 138]],
+  bbq: [[-80, 157.5], [160, 157.5], [160, 146], [136, 146], [136, 21]],
+  wv: [[-80, 157.5], [160, 157.5], [160, 146], [65, 146], [65, 18]],
+};
+function polyAt(P, k) {
+  const L = []; let tot = 0; for (let i = 1; i < P.length; i++) { const l = Math.hypot(P[i][0] - P[i - 1][0], P[i][1] - P[i - 1][1]); L.push(l); tot += l; }
+  let s = clamp(k, 0, 1) * tot;
+  for (let i = 0; i < L.length; i++) { if (s <= L[i] || i === L.length - 1) { const q = L[i] ? s / L[i] : 0;
+    return { x: P[i][0] + (P[i + 1][0] - P[i][0]) * q, y: P[i][1] + (P[i + 1][1] - P[i][1]) * q, a: Math.atan2(P[i + 1][1] - P[i][1], P[i + 1][0] - P[i][0]) }; } s -= L[i]; }
+}
+function truckState(tr, h) {
+  const t = h - tr.t0, P = TP[tr.kind];
+  if (t < 0 || t > T_IN + T_LOAD + T_OUT) return { on: false, gone: t > T_IN + T_LOAD + T_OUT };
+  if (t < T_IN) return Object.assign({ on: true, ph: "in" }, polyAt(P, t / T_IN));
+  if (t < T_IN + T_LOAD) return Object.assign({ on: true, ph: "load", k: (t - T_IN) / T_LOAD }, polyAt(P, 1));
+  const back = P.slice().reverse().concat([[260, 157.5]]); back[back.length - 2] = [160, 157.5];
+  const o = polyAt(back, (t - T_IN - T_LOAD) / T_OUT); o.a += 0; return Object.assign({ on: true, ph: "out", full: 1 }, o);
+}
+
+
+const NAMES = ["Minh", "Hùng", "Lan", "Tuấn", "Hoa", "Thắng", "Vũ", "Ngọc", "Dung", "Phương", "Quang", "Thảo", "Bình", "Hải", "Lộc", "Trang",
+  "Anh", "Giang", "Hiếu", "Mai", "Sơn", "Kim", "Đạt", "Linh", "Nam", "Thu", "Khoa", "Hà", "Phát", "Vy", "Trung", "Yến", "Tính", "Nga", "Hậu", "Chi",
+  "Bảo", "Hạnh", "Long", "My", "Tài", "Uyên", "Đức", "Thủy", "Khánh", "Hồng", "Việt", "Luân"];
+const POSTS = [
+  [114.5, 94.6, "vận hành cacbon hóa K1"], [27, 61, "vận hành lò K1"], [15, 86, "máy nghiền"], [34.5, 86, "máy ép than shisha"],
+  [44.5, 86, "máy ép than shisha"], [53, 96, "sấy than shisha"], [14, 110, "đóng gói"], [23, 110, "đóng gói"], [32, 110, "đóng gói"], [41, 110, "đóng gói"],
+  [114.5, 64.4, "vận hành dây chuyền 1"], [114.5, 73.4, "vận hành dây chuyền 2"], [114.5, 82.4, "vận hành dây chuyền 3"], [114.5, 91.4, "vận hành dây chuyền 4"],
+  [76, 74, "nạp phễu"], [125.5, 95, "nghiền và sàng"], [184.5, 66, "lò hoạt hóa 1–2"], [184.5, 80, "lò hoạt hóa 3–4"], [184.5, 94, "lò hoạt hóa 5–6"],
+  [146, 38, "lò hơi"], [158, 45, "xử lý nước"], [150.5, 110, "đóng bao"], [150.5, 113, "đóng bao"], [170, 108, "thủ kho than hoạt tính"],
+  [31, -4, "vận hành cẩu K1"], [110, -4, "vận hành cẩu THT"], [95, 140, "phòng thí nghiệm KCS"], [98.5, 140, "phòng thí nghiệm KCS"], [185, 135, "trạm cân"],
+  [160, 151.5, "bảo vệ cổng"], [111, 110.5, "xưởng sửa chữa"], [121.5, 111.5, "thợ điện"], [79, 113, "trạm biến áp"], [53, 36.5, "tinh chế giấm gỗ"],
+  [151.5, 22.5, "máy ép than BBQ"], [158, 12.6, "sấy than BBQ"], [169, 17.5, "đóng gói than BBQ"], [46, 28.6, "bồn giấm gỗ"],
+];
+const WALKS = [[[80, 64.2], [110, 64.2]], [[110, 80.2], [80, 80.2]], [[148, 64.5], [178, 64.5]], [[178, 78.5], [148, 78.5]], [[148, 92.5], [178, 92.5]],
+  [[14, 103.5], [48, 103.5]], [[156, 114], [184, 114]], [[74, 135.2], [87, 135.2]], [[110, 115], [130, 115]]];
+const OFFICE = [[75.2, 132.6], [78.7, 132.6], [82.2, 132.6], [85.7, 132.6], [75.2, 138.2], [78.7, 138.2], [82.2, 138.2]];
+const SHIFT_HAT = ["#F2C14E", "#F0935A", "#7FC8D8", "#B9A3E3"];
+const WALK_ROLES = ["tuần tra cacbon hóa", "tuần tra cacbon hóa", "tuần tra lò hoạt hóa", "tuần tra lò hoạt hóa", "tuần tra lò hoạt hóa",
+  "trưởng ca K1", "thủ kho than hoạt tính", "trưởng ca", "thợ sửa chữa trực ca"];
+const OFFICE_ROLES = ["giám đốc nhà máy", "kỹ sư trưởng", "kế toán", "nhân viên kinh doanh", "nhân viên logistics", "thu mua gáo dừa", "nhân sự và an toàn lao động"];
+const AREAS = ["Khối 1", "Than hoạt tính", "Than BBQ ép viên", "Giấm gỗ", "Phục vụ", "Văn phòng"];
+const areaOf = r => /брикет/.test(r) ? 2 : /уксус/.test(r) ? 3 : /Б1|мельница|кубик|^упаковка$/.test(r) ? 0 : /ОТК|весовая|охрана ворот|мастерская|электрик|подстанция|начальник|ремонтник/.test(r) ? 4 : 1;
+const SURN = ["Nguyễn", "Trần", "Lê", "Phạm", "Hoàng", "Phan", "Vũ", "Đặng", "Bùi", "Đỗ", "Hồ", "Ngô", "Dương", "Lý"];
+
+const STAFF = {
+  posts: [[0, "vận hành lò số 5 (Khối 1) và giấm gỗ", 0], [2, "máy nghiền và máy trộn", 0], [3, "máy ép than shisha", 0], [5, "sấy than shisha", 0],
+    [6, "phân loại và đóng gói than shisha", 0], [7, "phân loại và đóng gói than shisha", 0],
+    [14, "nhận gáo dừa và nạp phễu", 1], [15, "nghiền và sàng", 1], [16, "vận hành lò hoạt hóa", 1], [19, "lò hơi và xử lý nước", 1],
+    [21, "đóng than hoạt tính vào bao jumbo", 1], [22, "đóng than hoạt tính vào bao jumbo", 1], [23, "kho than hoạt tính và bốc xếp", 1],
+    [34, "máy ép than BBQ", 2], [36, "sấy và đóng gói than BBQ", 2], [33, "tinh chế giấm gỗ và bồn chứa", 3],
+    [29, "bảo vệ cổng và trạm cân", 4], [31, "thợ điện, sửa chữa trực ca", 4]],
+  walks: [[0, "tuần tra cacbon hóa THT, 4 dây chuyền", 1], [2, "tuần tra lò hoạt hóa", 1]],
+  office: [[0, "giám đốc nhà máy"], [2, "kế toán và KCS"]],
+};
+const CREW_N = STAFF.posts.length + STAFF.walks.length, OFFICE_N = STAFF.office.length;
+
+const ROSTER = (() => {
+  const pairs = []; NAMES.forEach((g, i) => SURN.forEach((f, j) => pairs.push([f, g, rnd(i * 31.7 + j * 7.3)])));
+  pairs.sort((a, b) => a[2] - b[2]); let n = 0; const R = [];
+  const add = (crew, kind, slot, role, area) => { const [f, g] = pairs[n++]; R.push({ id: R.length, crew, kind, slot, role, area, given: g, name: f + " " + g }); };
+  for (let c = 0; c < 4; c++) { STAFF.posts.forEach(([i, r, a]) => add(c, "post", i, r, a)); STAFF.walks.forEach(([i, r, a]) => add(c, "walk", i, r, a)); }
+  STAFF.office.forEach(([i, r]) => add(OFF, "office", i, r, 5));
+  return R;
+})();
+const weekday = d => new Date(d * DAY).getUTCDay();
+const officeOpen = S => weekday(S.d) !== 0 && S.h >= 8 && S.h < 17;          
+const shiftDay = S => S.h < 6 ? S.d - 1 : S.d;                               
+const onDuty = (p, S) => p.crew === OFF ? officeOpen(S) : p.crew === crewOn(S.sh, shiftDay(S));
+
+function hoursOf(p, S) {
+  const h = S.h, t = new Date(S.d * DAY), dom = t.getUTCDate();
+  if (p.crew === OFF) { const today = weekday(S.d) === 0 ? 0 : clamp(h - 8, 0, 4) + clamp(h - 13, 0, 4);    
+    let days = 0; for (let i = 1; i < dom; i++) if (weekday(S.d - i) !== 0) days++;
+    return { today, month: days * 8 + today }; }
+  const now = S.d * 24 + h, t0 = S.d * 24, m0 = (S.d - (dom - 1)) * 24; let today = 0, month = 0;
+  for (let D = S.d - dom; D <= S.d; D++) for (let s = 0; s < 3; s++) {
+    if (crewOn(s, D) !== p.crew) continue;
+    const a = D * 24 + SHIFTS[s][1], b = D * 24 + SHIFTS[s][2];
+    month += Math.max(0, Math.min(b, now) - Math.max(a, m0)); today += Math.max(0, Math.min(b, now) - Math.max(a, t0)); }
+  return { today, month };
+}
+function dutyText(p, S) {
+  const h = S.h;
+  if (p.crew === OFF) return weekday(S.d) === 0 ? "nghỉ" : officeOpen(S) ? "có mặt từ 08:00" : h < 8 ? "đến lúc 08:00" : "kết thúc ngày lúc 17:00";
+  if (onDuty(p, S)) return `vào ca từ ${hhmm(SHIFTS[S.sh][1])}`;
+  const now = S.d * 24 + h, worked = hoursOf(p, S).today > 0;
+  for (let D = S.d - 1; D <= S.d + 4; D++) for (let s = 0; s < 3; s++) {
+    if (crewOn(s, D) !== p.crew) continue;
+    const a = D * 24 + SHIFTS[s][1], t = hhmm(SHIFTS[s][1]);
+    if (a <= now) continue;
+    if (a < (S.d + 1) * 24) return `vào ca lúc ${t}`;
+    if (a < (S.d + 2) * 24) return worked ? `đã hết ca, mai vào lúc ${t}` : `nghỉ, mai vào lúc ${t}`;
+    return "nghỉ";
+  }
+  return "nghỉ";
+}
+
+const sinceStart = (p, S) => p.crew === OFF ? clamp(S.h - 8, 0, 4) + clamp(S.h - 13, 0, 4) : (S.h - SHIFTS[S.sh][1] + 24) % 24;
+const hm = x => { const m = Math.round(x * 60); return m < 60 ? `${m} phút` : `${Math.floor(m / 60)} giờ ${String(m % 60).padStart(2, "0")} phút`; };
+
+
+const WB = { x0: -240, x1: 440, y0: -190, y1: 200 };
+const BL = "#2F8FD6", SV = "#C3C9D0", RD = "#D93A2B";
+
+const TREES = [];
+for (let i = 0; i < 2200; i++) { const x = WB.x0 + rnd(i) * (WB.x1 - WB.x0), y = -13 + rnd(i + 0.5) * 177;
+  if (x > -4 && x < 204 && y > -15 && y < 152) continue; if (y > 150.5 && y < 164.5) continue;
+  TREES.push([x, y, 1.6 + rnd(i + 0.2) * 2.2, i % 5, rnd(i + 0.9) < 0.35]); }
+const PALMS = [[-2, 20], [-2, 60], [-2, 100], [-2, 140], [202, 15], [202, 55], [202, 95], [202, 135], [30, 151], [90, 151], [130, 151], [190, 151]];
+
+
+
+const PAL = {
+  light: { bg: "#D3D6D0", ground: "#C9CCC5", fields: ["#C3CB82", "#B2C176", "#CFCB92"], river: "#3F95AA", bank: "#B9BCB4",
+    trees: ["#4E8A3E", "#5C9746", "#467E3A", "#69A24E", "#558C42"], curb: "#C2C6C8", asph: "#62676C", site: "#CBCDC8", quay: "#B5B8B4",
+    road: "#70757A", floor: "#E3E4DF", office: "#EEE8DA", wall: "#6D767E", canopy: "#D8CBB2", pad: "#C6C9C5", weigh: "#C2C6C9",
+    lawn: "#6FA352", fence: "#6D767E", shadow: "rgba(40,50,40,.22)", night: false },
+  dark: { bg: "#0B0D0F", ground: "#202326", fields: ["#3C4E2A", "#34472A", "#455A30"], river: "#0F3A46", bank: "#34383C",
+    trees: ["#24492A", "#2B5530", "#1F4026", "#305C33", "#27502C"], curb: "#5B6066", asph: "#303337", site: "#3A3D40", quay: "#4A4E53",
+    road: "#2A2C30", floor: "#2D3136", office: "#4A4740", wall: "#C9CED3", canopy: "#3A342D", pad: "#34383C", weigh: "#3A3E44",
+    lawn: "#2D5A33", fence: "#A9B0B6", shadow: "rgba(0,0,0,.38)" },
+};
+const store = { get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} } };
+let THEME = store.get("dinhan-theme") === "dark" ? "dark" : "light", P = PAL[THEME];
+let NIGHT = store.get("dinhan-night") === "1";          
+function applyTheme() { P = PAL[THEME]; document.body.classList.toggle("light", THEME === "light");
+  $("bTheme").textContent = THEME === "light" ? "Giao diện tối" : "Giao diện sáng"; $("bNight").classList.toggle("on", NIGHT); lastChart = -1; }
+
+function drawStatic(g, V) {
+  const vis = (x, y, w, d) => x + w > V.x0 && x < V.x1 && y + d > V.y0 && y < V.y1;
+  const R = (x, y, w, d, c) => { g.fillStyle = c; g.fillRect(x, y, w, d); };
+  const S = (x, y, w, d, c, lw) => { g.strokeStyle = c; g.lineWidth = lw || 0.3; g.strokeRect(x, y, w, d); };
+  const C = (x, y, r, c) => { g.fillStyle = c; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); };
+  const L = (pts, c, w, dash) => { g.strokeStyle = c; g.lineWidth = w; g.setLineDash(dash || []); g.beginPath(); pts.forEach(([x, y], i) => i ? g.lineTo(x, y) : g.moveTo(x, y)); g.stroke(); g.setLineDash([]); };
+  const SH = (x, y, w, d, h) => R(x + h * 0.55, y - h * 0.55, w, d, P.shadow);      
+  
+  const CY = (x, y, w, d, c) => { const gr = g.createLinearGradient(0, y, 0, y + d); gr.addColorStop(0, shade(c, -0.45)); gr.addColorStop(0.55, shade(c, 0.25)); gr.addColorStop(1, shade(c, -0.35)); g.fillStyle = gr; g.fillRect(x, y, w, d); };
+  const BALL = (x, y, r, c) => { const gr = g.createRadialGradient(x - r * 0.35, y + r * 0.35, r * 0.1, x, y, r); gr.addColorStop(0, shade(c, 0.35)); gr.addColorStop(1, shade(c, -0.3)); g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); };
+
+  
+  R(V.x0, V.y0, V.x1 - V.x0, V.y1 - V.y0, P.ground);
+  
+  if (V.y0 < -14) { R(V.x0, Math.max(V.y0, -400), V.x1 - V.x0, -14 - Math.max(V.y0, -400), P.river);
+    for (let i = 0; i < 600; i++) { const x = WB.x0 + rnd(i * 3.1) * (WB.x1 - WB.x0), y = -175 + rnd(i * 5.7) * 158; if (vis(x, y, 6, 1)) L([[x, y], [x + 2 + rnd(i) * 5, y]], "rgba(150,215,225,.16)", 0.22); }
+    R(V.x0, -16, V.x1 - V.x0, 2.2, P.bank); }
+  
+  
+  R(V.x0, 151, V.x1 - V.x0, 13, P.curb); R(V.x0, 152, V.x1 - V.x0, 11, P.asph);
+  L([[V.x0, 157.5], [V.x1, 157.5]], "#E8E6DF", 0.22, [3, 3]); L([[V.x0, 152.6], [V.x1, 152.6]], "rgba(232,230,223,.5)", 0.15); L([[V.x0, 162.4], [V.x1, 162.4]], "rgba(232,230,223,.5)", 0.15);
+  
+  R(0, -12, 200, 162, P.site);
+  if (k > 2) for (let x = 0; x <= 200; x += 6) L([[x, -12], [x, 150]], "rgba(0,0,0,.10)", 0.08);
+  if (k > 2) for (let y = -12; y <= 150; y += 6) L([[0, y], [200, y]], "rgba(0,0,0,.10)", 0.08);
+  R(6, -12, 122, 12, P.quay);
+  [[58, 0, 14, 150], [132, 0, 8, 150], [0, 48, 200, 8], [0, 100, 200, 6], [20, 142, 180, 8]].forEach(([x, y, w, d]) => { R(x, y, w, d, P.road); S(x, y, w, d, "rgba(200,200,190,.18)", 0.15); });
+  [[[65, 0], [65, 150]], [[136, 0], [136, 150]], [[0, 52], [200, 52]], [[0, 103], [200, 103]], [[22, 146], [200, 146]]].forEach(p => L(p, "rgba(236,234,226,.75)", 0.16, [2, 2.5]));
+  
+  L([[0, -12], [0, 150], [154, 150]], P.fence, 0.18); L([[166, 150], [200, 150], [200, -12]], P.fence, 0.18);
+  if (k > 3) for (let y = -12; y <= 150; y += 3) { C(0, y, 0.15, "#C8CDD2"); C(200, y, 0.15, "#C8CDD2"); }
+  R(154, 149.4, 12, 1.2, P.road); L([[154, 150], [160, 151.8]], "#E8C22E", 0.35); L([[166, 150], [160, 151.8]], "#E8C22E", 0.35);
+  for (let x = 10; x < 128; x += 8) C(x, -11.2, 0.45, "#9AA0A6");
+  PALMS.forEach(([x, y]) => palm(g, x, y));
+  
+  D.scene.forEach(o => {
+    const z = ZONE(o.id);
+    if (o.k === "hall" || o.k === "box" || o.k === "office") {
+      SH(o.x, o.y, o.w, o.d, o.h || 6);
+      R(o.x, o.y, o.w, o.d, o.k === "office" ? P.office : P.floor);
+      if (k > 2.5 && o.k !== "office") for (let x = o.x + 6; x < o.x + o.w; x += 6) L([[x, o.y], [x, o.y + o.d]], "rgba(255,255,255,.035)", 0.1);
+      S(o.x + 0.25, o.y + 0.25, o.w - 0.5, o.d - 0.5, P.wall, 0.5);          
+      S(o.x + 0.75, o.y + 0.75, o.w - 1.5, o.d - 1.5, z, 0.22);               
+      (o.ds || []).forEach(dx => { const dx0 = o.x + dx; if (o.ridge === "y") R(o.x - 0.1, o.y + dx - 2, 0.7, 4, "#5B6570"); else R(dx0 - 2, o.y - 0.1, 4, 0.7, "#5B6570"); });
+    }
+    else if (o.k === "canopy") { SH(o.x, o.y, o.w, o.d, 3); R(o.x, o.y, o.w, o.d, P.canopy); S(o.x, o.y, o.w, o.d, z, 0.3);
+      for (let x = o.x; x <= o.x + o.w + 0.1; x += 6) for (let y = o.y; y <= o.y + o.d + 0.1; y += 6) R(x - 0.25, y - 0.25, 0.5, 0.5, "#8A8F95"); }
+    else if (o.k === "tanks") { R(o.x, o.y, o.w, o.d, P.pad); S(o.x, o.y, o.w, o.d, "#8A9096", 0.5);
+      for (let i = 0; i < 3; i++) for (let j = 0; j < 2; j++) { const x = o.x + 3.8 + i * 6.7, y = o.y + 4.8 + j * 8.4; C(x + 1.3, y - 1.3, 2.9, "rgba(0,0,0,.35)"); BALL(x, y, 2.9, "#7FB8DD"); C(x, y, 0.5, "#4A6F88"); } }
+    else if (o.k === "cyl") { C(o.cx + o.r * 0.8, o.cy - o.r * 0.8, o.r, "rgba(0,0,0,.35)"); BALL(o.cx, o.cy, o.r, o.c || "#AAB"); }
+    else if (o.k === "stack") BALL(o.cx, o.cy, o.r, "#8D969F");
+    else if (o.k === "los") { R(o.x, o.y, o.w, o.d, P.pad); S(o.x, o.y, o.w, o.d, "#8A9096", 0.5); R(o.x + 1.5, o.y + 1.5, o.w - 3, 7.5, "#2D6670"); R(o.x + 1.5, o.y + 11, o.w - 3, 7.5, "#3B7B6E"); }
+    else if (o.k === "pool") { R(o.x, o.y, o.w, o.d, "#1F6274"); S(o.x, o.y, o.w, o.d, "#B8C0C6", 0.4); }
+    else if (o.k === "weigh") { R(o.x, o.y, o.w, o.d, P.weigh); R(o.x + 2, o.y + 2.5, o.w - 4, o.d - 5, "#6B737C"); S(o.x, o.y, o.w, o.d, "#8A9096", 0.4); }
+  });
+  
+  R(105, 127, 20, 14, P.lawn); SH(108, 132.5, 14, 8, 7);
+  const rf = g.createLinearGradient(0, 132.5, 0, 140.5); rf.addColorStop(0, "#9E4A2A"); rf.addColorStop(0.5, "#D2693E"); rf.addColorStop(1, "#9E4A2A"); g.fillStyle = rf; g.fillRect(108, 132.5, 14, 8);
+  L([[108, 136.5], [122, 136.5]], "#7E3A20", 0.25); R(113.4, 134.9, 3.2, 3.2, "#E9E4D8"); C(115, 136.5, 0.6, "#E2B13C");
+  R(110, 128.4, 10, 2.8, "#3FB2CC"); S(110, 128.4, 10, 2.8, "#EDE8DC", 0.3);
+  
+  const carb = (x0, y) => {
+    SH(x0, y - 1.8, 3.6, 3.6, 3); R(x0, y - 1.8, 3.6, 3.6, BL); R(x0 + 0.6, y - 1.2, 2.4, 2.4, shade(BL, -0.35)); L([[x0 + 3.6, y], [x0 + 8.7, y]], "#111", 0.9);
+    SH(x0 + 8.7, y - 1.6, 16.3, 3.2, 2); CY(x0 + 8.7, y - 1.6, 16.3, 3.2, SV); BALL(x0 + 12, y - 2.9, 0.9, SV); BALL(x0 + 20, y - 2.9, 0.9, SV);
+    for (let i = 0; i < 3; i++) { CY(x0 + 26 + i * 2.7, y - 1.4, 2.1, 2.8, "#9AA5B1"); BALL(x0 + 27 + i * 2.7, y - 1.6, 0.55, RD); }
+    L([[x0 + 34, y], [x0 + 35.4, y]], "#111", 0.9); SH(x0 + 35.4, y - 1.35, 8.6, 2.7, 2); CY(x0 + 35.4, y - 1.35, 8.6, 2.7, BL);
+  };
+  CARB_Y.forEach(y => { carb(73.6, y); L([[118, y], [126, y]], "#111", 0.9); });
+  
+  CARB_Y.forEach(y => { L([[100.6, y + 1.2], [100.6, y + 2.7], [71, y + 2.7]], "#3C6E8C", 0.4); });
+  L([[71, CARB_Y[CARB_Y.length - 1] + 2.7], [71, 52], [56, 52], [56, 26]], "#3C6E8C", 0.6); L([[56, 26], [56, 30]], "#3C6E8C", 0.45);
+  
+  SH(56, 86.6, 17.6, 1.6, 1.5); R(56, 86.6, 17.6, 1.6, "#5C6066");
+  
+  R(11, 66, 9, 6, "#6F7B87"); R(12, 67, 7, 4, "#8E99A4");      
+  SH(11, 81, 8, 5, 3); R(11, 81, 8, 5, "#5B6875"); BALL(25, 83.5, 2, "#9AA5B1"); SH(32, 81, 5, 4, 3); R(32, 81, 5, 4, "#2F5F9E"); SH(42, 81, 5, 4, 3); R(42, 81, 5, 4, "#2F5F9E");
+  [91, 99].forEach(y => { SH(12, y, 38, 3.2, 2); CY(12, y, 38, 3.2, "#8E99A4"); R(50, y - 0.3, 3.5, 3.8, "#C4532A"); });
+  R(10, 95.4, 42, 1.4, "#15171A");
+  for (let i = 0; i < 4; i++) { SH(12 + i * 9, 107, 6, 2, 1); R(12 + i * 9, 107, 6, 2, "#B8925E"); }
+  for (let i = 0; i < 14; i++) for (let r = 0; r < 2; r++) if (i !== 6 && i !== 7) { SH(10.5 + i * 3.3, 122.6 + r * 5.2, 2.4, 1.9, 1.4); R(10.5 + i * 3.3, 122.6 + r * 5.2, 2.4, 1.9, ["#C9A76B", "#B8905A", "#D4B47E"][(i + r) % 3]); }
+  
+  SH(120, 93, 5, 4, 3); R(120, 93, 5, 4, "#5B6875"); SH(127, 92, 4, 5, 4); R(127, 92, 4, 5, "#5B6875"); R(125.9, 57.5, 1.5, 37, "#15171A");
+  SH(72.8, 48.8, 4.8, 4.2, 2.5); R(72.8, 48.8, 4.8, 4.2, "#7A6A55"); R(73.3, 49.3, 3.8, 3.2, "#5A3C22");
+  
+  [61, 68, 75, 82, 89, 96].forEach(y => { R(143.9, y - 0.9, 2.2, 1.8, "#7A8794"); SH(146, y - 2.1, 34, 4.2, 3); CY(146, y - 2.1, 34, 4.2, "#8D99A6");
+    SH(180.5, y - 2.4, 4, 4.8, 5); R(180.5, y - 2.4, 4, 4.8, "#B8C2CC"); CY(185.5, y - 1.1, 5, 2.2, SV); });
+  R(190.2, 59.5, 1.4, 38.5, "#15171A");
+  
+  [34.5, 42].forEach(y => { SH(145, y - 2.1, 12, 4.2, 3); CY(145, y - 2.1, 12, 4.2, "#B03A2E"); R(143.4, y - 0.9, 1.6, 1.8, "#5B6875"); });
+  BALL(160.5, 34.5, 1.7, "#6FB6E8"); BALL(160.5, 42.5, 1.3, "#A9D3F0");
+  SH(143, 108, 6, 5, 4); R(143, 108, 6, 5, "#9AA5B1"); R(144, 109, 4, 3, "#2B333B");
+  
+  R(74, 108, 4, 3, "#7A8794"); R(80, 108, 4, 3, "#7A8794"); R(108, 108, 9, 1.4, "#8A6E4B"); R(120, 108, 3, 2.4, "#4F5D73"); R(108, 120.5, 16, 1.5, "#9AA5B1");
+  OFFICE.forEach(([x, y]) => R(x - 1.2, y - 1.8, 2.4, 1.1, "#C9A76B")); R(93.4, 140.4, 8, 1.1, "#E8EDF2"); R(89.6, 131, 2.2, 4, "#8A6E4B");
+  
+  BALL(145.5, 21, 1.6, "#6B7480"); SH(149, 19.5, 5, 3, 2.5); R(149, 19.5, 5, 3, "#4F5D73"); R(154, 20.4, 10, 1.2, "#15171A");
+  SH(146, 10, 20, 3.2, 2); CY(146, 10, 20, 3.2, "#8E99A4"); R(166, 9.8, 2.6, 3.6, "#C4532A");
+  
+
+  
+  LAMPS.forEach(([x, y]) => { C(x + 0.3, y - 0.3, 0.32, "rgba(0,0,0,.4)"); C(x, y, 0.28, "#D9DDE0"); });
+}
+function palm(g, x, y) {
+  g.fillStyle = "rgba(0,0,0,.35)"; g.beginPath(); g.arc(x + 1.4, y - 1.4, 2.6, 0, 7); g.fill();
+  g.strokeStyle = "#3E7A3A"; g.lineWidth = 0.55; g.lineCap = "round";
+  for (let i = 0; i < 7; i++) { const a = i / 7 * 6.283 + x; g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x + Math.cos(a) * 1.8, y + Math.sin(a) * 1.8 + 0.4, x + Math.cos(a) * 3, y + Math.sin(a) * 3 - 0.5); g.stroke(); }
+  g.fillStyle = "#6B5634"; g.beginPath(); g.arc(x, y, 0.45, 0, 7); g.fill(); g.lineCap = "butt";
+}
+function shade(hex, f) {   
+  const n = parseInt(hex.slice(1), 16), c = [n >> 16, (n >> 8) & 255, n & 255].map(v => Math.round(f > 0 ? v + (255 - v) * f : v * (1 + f)));
+  return "rgb(" + c.join(",") + ")";
+}
+const ZONE = id => ({ hall_b1: D.col.b1, fg_b1: D.col.fg, shed_b1: D.col.raw, shed_au: D.col.raw, carb: D.col.ac, act: D.col.act, pack_au: D.col.fg,
+  boiler: D.col.util, bbq: D.col.bbq, workshop: D.col.util, office: D.col.office, tanks: D.col.liq, purif: D.col.liq, substation: D.col.util, los: D.col.liq, weigh: D.col.util })[id] || "#8A939C";
+
+
+const CARB_Y = [60, 68, 76, 84, 92];        
+const BELTS = [
+  [[75.2, 52.6], [75.2, 94]], [[126.65, 58], [126.65, 94]], [[118.5, 92], [118.5, 96.4], [64, 96.4], [64, 87.4], [20, 87.4], [20, 72]], [[129.6, 98.6], [143.5, 98.6], [143.5, 60]],
+  [[190.9, 60], [190.9, 108.6], [147, 108.6]], [[11, 96.1], [51, 96.1]], [[120.5, 98.1], [129.5, 98.1]],
+  [[31, -3], [31, 8]], [[110, -3], [110, 8]],
+];
+const LAMPS = []; for (let x = 4; x < 200; x += 24) { LAMPS.push([x, 48.6]); LAMPS.push([x, 100.5]); } for (let y = 4; y < 150; y += 24) { LAMPS.push([58.6, y]); LAMPS.push([139.4, y]); }
+for (let x = 28; x < 200; x += 24) LAMPS.push([x, 149]); for (let x = 14; x < 128; x += 24) LAMPS.push([x, -1]);
+
+
+const cv = $("map"), ctx = cv.getContext("2d"), box = $("mapbox");
+let W = 0, H = 0, dpr = 1, k = 4, cx = 100, cy = 70;
+
+let autoFit = true;                    
+
+let SY = 1;
+function fitAll() { autoFit = true; let kx = W / 202, ky = H / 214;
+  k = kx; SY = ky / kx; cx = 100; cy = 57; }     
+
+function fitBox() { if (document.fullscreenElement) { box.style.height = ""; return; }
+  if (innerWidth > 1000) { box.style.height = Math.max(480, $("side").offsetHeight) + "px"; return; }   
+  const want = Math.round(box.clientWidth * 172 / 202), max = innerWidth > 1000 ? innerHeight - 150 : Math.round(innerHeight * 0.64);
+  box.style.height = Math.max(320, Math.min(max, want)) + "px"; }
+function resize() { fitBox(); dpr = Math.min(2, devicePixelRatio || 1); W = box.clientWidth; H = box.clientHeight; cv.width = W * dpr; cv.height = H * dpr; }
+const sx = x => (x - cx) * k + W / 2, sy = y => (cy - y) * k * SY + H / 2;
+const wx = px => (px - W / 2) / k + cx, wy = py => cy - (py - H / 2) / (k * SY);
+function zoomAt(f, px, py) { autoFit = false; const x = wx(px), y = wy(py); k = clamp(k * f, Math.min(W / 330, H / 280), 30); cx = x - (px - W / 2) / k; cy = y + (py - H / 2) / (k * SY); }
+const ptr = new Map(); let moved = 0, pinch0 = 0;
+cv.addEventListener("pointerdown", e => { cv.setPointerCapture(e.pointerId); ptr.set(e.pointerId, [e.offsetX, e.offsetY]); moved = 0; cv.classList.add("drag");
+  if (ptr.size === 2) { const [a, b] = [...ptr.values()]; pinch0 = Math.hypot(a[0] - b[0], a[1] - b[1]); } });
+cv.addEventListener("pointermove", e => { if (!ptr.has(e.pointerId)) return; const p = ptr.get(e.pointerId), dx = e.offsetX - p[0], dy = e.offsetY - p[1];
+  if (ptr.size === 1) { cx -= dx / k; cy += dy / (k * SY); moved += Math.abs(dx) + Math.abs(dy); if (moved > 6) autoFit = false; }
+  ptr.set(e.pointerId, [e.offsetX, e.offsetY]);
+  if (ptr.size === 2) { const [a, b] = [...ptr.values()], d = Math.hypot(a[0] - b[0], a[1] - b[1]); if (pinch0) zoomAt(d / pinch0, (a[0] + b[0]) / 2, (a[1] + b[1]) / 2); pinch0 = d; moved = 99; } });
+const up = e => { if (ptr.size === 1 && moved < 6) pick(e.offsetX, e.offsetY); ptr.delete(e.pointerId); if (ptr.size < 2) pinch0 = 0; if (!ptr.size) cv.classList.remove("drag"); };
+cv.addEventListener("pointerup", up); cv.addEventListener("pointercancel", e => { ptr.delete(e.pointerId); cv.classList.remove("drag"); });
+cv.addEventListener("wheel", e => { e.preventDefault(); zoomAt(Math.exp(-e.deltaY * 0.0015), e.offsetX, e.offsetY); }, { passive: false });
+$("zIn").onclick = () => zoomAt(1.4, W / 2, H / 2); $("zOut").onclick = () => zoomAt(1 / 1.4, W / 2, H / 2); $("zAll").onclick = fitAll;
+
+if (!box.requestFullscreen) $("zFull").hidden = true;
+$("zFull").onclick = () => { (document.fullscreenElement ? document.exitFullscreen() : box.requestFullscreen()).catch(() => {}); };
+document.addEventListener("fullscreenchange", () => { resize(); fitAll(); });
+
+
+let cardId = null;
+const NAMES_EXTRA = { villa: [108, 132.5, 14, 8], wharf: [6, -12, 122, 12] };
+function pick(px, py) {
+  const x = wx(px), y = wy(py);
+  { const u = clamp(k * 0.42, 2.4, 9); let best = null, bd = 1e9;      
+    NOW_P.forEach(q => { const dx = px - sx(q.x), dy = py - (sy(q.y) - u * 3); const dd = Math.hypot(dx / (u * 2), dy / (u * 3.6)); if (dd < 1 && dd < bd) { bd = dd; best = q; } });
+    if (best) { selectPerson(best.p.id, false); return; } }
+  let hit = Object.entries(NAMES_EXTRA).find(([, r]) => x >= r[0] && x <= r[0] + r[2] && y >= r[1] && y <= r[1] + r[3]);
+  let id = hit && hit[0];
+  if (!id) { const o = D.scene.find(o => o.w && x >= o.x && x <= o.x + o.w && y >= o.y && y <= o.y + o.d); id = o && o.id; }
+  selP = null; markRow();
+  if (!id || !D.info[id]) { $("card").hidden = true; cardId = null; return; }
+  const [t, z, a, p] = D.info[id]; cardId = id;
+  $("cT").textContent = t; $("cZ").textContent = z; $("cA").textContent = a; $("cP").textContent = p; $("card").hidden = false;
+}
+$("cardX").onclick = () => { $("card").hidden = true; cardId = null; selP = null; markRow(); };
+function selectPerson(id, fly) {
+  const p = ROSTER[id]; selP = id; cardId = "p:" + id; markRow();
+  $("cZ").textContent = p.crew === OFF ? "Văn phòng · T2–T7 08:00–17:00" : p.crew < 3 ? `Tổ ${BRIG[p.crew]} · ca ${SHIFTS[p.crew][0]} ${hhmm(SHIFTS[p.crew][1])}–${hhmm(SHIFTS[p.crew][2])}, cứ 4 ngày nghỉ 1 ngày · ${AREAS[p.area]}` : `Tổ D · tổ thay ca: làm thay ca của tổ đang nghỉ · ${AREAS[p.area]}`;
+  $("cT").textContent = p.name; $("cA").textContent = p.role; $("cP").textContent = ""; $("card").hidden = false;
+  if (fly) { const q = NOW_P.find(q => q.p.id === id); if (q) { autoFit = false; k = Math.max(k, 11); cx = q.x; cy = q.y + 2; } }
+  if (LAST_S) { lastPeople = ""; peoplePanel(LAST_S); }
+  const row = document.querySelector(`.prow[data-id="${id}"]`); if (row && !fly) row.scrollIntoView({ block: "nearest" });
+}
+function markRow() { document.querySelectorAll(".prow").forEach(r => r.classList.toggle("sel", +r.dataset.id === selP)); }
+
+
+function state(ms) {
+  const h = todH(ms), d = dayIdx(ms), sh = shiftAt(h);
+  const kAC = D.acDay * dayF(d, 1), kCu = D.cubeDay * dayF(d, 2), kBq = D.bbqDay * dayF(d, 6);
+  const ac = kAC * h / 24, cubes = kCu * h / 24, bbq = kBq * h / 24;
+  const vin = D.vinDay * dayF(d, 2) * h / 24, ref = D.refDay * h / 24;       
+  const barges = BARGES.map(b => Object.assign({ b }, bargeState(b, h, d)));
+  const shell = barges.reduce((s, q) => s + q.got, 0);
+  const trucks = TRUCKS.map(t => Object.assign({ t }, truckState(t, h)));
+  const cont = trucks.filter(q => q.gone && q.t.kind === "au").length;
+  const contB1 = trucks.filter(q => q.gone && q.t.kind === "b1").length;
+  const mk = maintKiln(d), maint = h >= 10 && h < 12;
+  const stockBags = Math.floor((ac + kAC * 0.35) / 0.5) - cont * 40;   
+  const bbqGone = trucks.some(q => q.gone && q.t.kind === "bbq"), wvGone = trucks.some(q => q.gone && q.t.kind === "wv");
+  const bbqStock = kBq * 0.6 + bbq - (bbqGone ? kBq : 0);                  
+  const tankK = clamp(0.35 + (vin - (wvGone ? D.vinDay * 0.9 : 0)) / (D.vinDay * 2.2), 0.15, 0.95);   
+  
+  const rev = ac * D.priceAC + cubes * D.priceCube + (vin - ref) * D.priceWv + ref * D.priceRef + bbq * D.priceBbq;
+  
+  const ebitda = ac * D.priceAC * D.ebK.ac + (cubes * D.priceCube + vin * D.priceWv) * D.ebK.b1 + ref * (D.priceRef - D.priceWv) * D.ebK.wvr + bbq * D.priceBbq * D.ebK.bbq;
+  return { h, d, sh, ac, cubes, bbq, vin, ref, shell, barges, trucks, cont, contB1, bbqGone, wvGone, bbqStock, tankK, mk, maint, stockBags, rev, ebitda };
+}
+
+
+function events(S) {
+  const E = [], d = S.d;
+  const n0 = CREW_N; SHIFTS.forEach(([n, a], i) => E.push([a % 24, `Tổ ${BRIG[crewOn(i, d)]} vào ca ${n}: ${n0} ${plural(n0, "người", "người", "người")} trong xưởng${i === 0 ? `, ${OFFICE_N} в офисе с 08:00` : ""}`, i]));
+  BARGES.forEach(b => { const q = bargeState(b, 0, d), dock = b.to === "au" ? "bến than hoạt tính" : "bến Khối 1";
+    E.push([b.t0, `Sà lan «${b.name}» đang đến ${dock}`]); E.push([b.t0 + B_IN, `«${b.name}» đã cập bến, cẩu bắt đầu dỡ hàng`]);
+    E.push([b.t0 + B_IN + B_UNLOAD, `Đã nhận ${fmt(q.tons)} tấn gáo dừa từ «${b.name}», mái che đã được bổ sung`]); });
+  const what = { au: "container than hoạt tính", b1: "than shisha", bbq: "than BBQ ép viên", wv: "giấm gỗ thô" };
+  TRUCKS.forEach(t => { E.push([t.t0 + T_IN, t.kind === "wv" ? `Xe bồn ${t.plate} vào vị trí nhận hàng tại bồn chứa` : `Xe tải ${t.plate} vào lấy ${what[t.kind]}`]);
+    E.push([t.t0 + T_IN + T_LOAD, t.kind === "au" ? `Container 20 tấn than hoạt tính (40 bao jumbo) đã ra cảng, xe ${t.plate}`
+      : t.kind === "b1" ? `Container than shisha đã ra cảng, xe ${t.plate}`
+      : t.kind === "bbq" ? `Than BBQ: ${fmt(D.bbqDay * dayF(d, 6), 1)} tấn trên pallet đã đi đến khách hàng, xe ${t.plate}`
+      : `Xe bồn ${t.plate} đã chở ${fmt(D.vinDay * dayF(d, 2) * 0.9, 1)} tấn giấm gỗ thô`]); });
+  E.push([18, `Tinh chế giấm gỗ: trong ngày ${fmt(D.refDay, 1)} tấn đã tinh chế, đóng bồn 1 tấn`]);
+  E.push([7.5, "Than BBQ: máy ép đã chạy, than vụn từ khâu nghiền vào máy trộn"]);
+  E.push([10, `Lò hoạt hóa số ${S.mk + 1} dừng để kiểm tra định kỳ`]); E.push([12, `Lò hoạt hóa số ${S.mk + 1} hoạt động trở lại`]);
+  [0.5, 8.5, 16.5].forEach((h, i) => E.push([h, `KCS: lô than hoạt tính 6×12, chỉ số iốt ${fmt(1010 + Math.floor(rnd(d * 3 + i) * 70))} mg/g — đạt`]));
+  [3, 11, 19].forEach((h, i) => E.push([h, `Cacbon hóa: ${fmt(520 + Math.floor(rnd(d + i) * 40))} °C, khí nhiệt phân dùng để sấy và cho lò hơi`]));
+  return E.filter(e => e[0] <= S.h).sort((a, b) => b[0] - a[0]);
+}
+let lastLogKey = "";
+function renderLog(S) {
+  const E = events(S), key = S.d + ":" + E.length; if (key === lastLogKey) return;
+  const fresh = lastLogKey && lastLogKey.split(":")[0] === String(S.d); lastLogKey = key;
+  $("log").innerHTML = E.slice(0, 40).map((e, i) => `<li class="${fresh && i === 0 ? "new" : ""}"><time>${hhmm(e[0])}</time><span>${e[1]}</span></li>`).join("");
+}
+
+
+const temp = (base, amp, seed) => Math.round(base + amp * Math.sin(anim * 0.31 + seed * 1.7) + amp * 0.5 * Math.sin(anim * 0.13 + seed));
+function tag(x, y, text, color, bg) {
+  ctx.font = "600 12px " + getComputedStyle(document.body).getPropertyValue("--mono");
+  const w = ctx.measureText(text).width + 10, px = sx(x), py = sy(y);
+  ctx.fillStyle = bg || "rgba(11,13,15,.86)"; ctx.fillRect(px - w / 2, py - 9, w, 18);
+  ctx.strokeStyle = color; ctx.lineWidth = 1; ctx.strokeRect(px - w / 2 + 0.5, py - 8.5, w - 1, 17);
+  ctx.fillStyle = color; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(text, px, py + 0.5);
+}
+function label(x, y, text, size, color) {
+  ctx.font = `600 ${size}px Oswald, "Arial Narrow", sans-serif`; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.lineWidth = 3.2; ctx.strokeStyle = "rgba(0,0,0,.85)"; ctx.strokeText(text, sx(x), sy(y)); ctx.fillStyle = color || "#EEEAE0"; ctx.fillText(text, sx(x), sy(y));
+}
+const wrect = (x, y, w, d, c) => { ctx.fillStyle = c; ctx.fillRect(sx(x), sy(y + d), w * k, d * k * SY); };
+
+function person(x, y, hat) { const r = Math.max(3, 0.75 * k); ctx.fillStyle = "rgba(0,0,0,.45)"; ctx.beginPath(); ctx.arc(sx(x) + 1.5, sy(y) + 1.5, r, 0, 7); ctx.fill();
+  ctx.fillStyle = "#2E6FB0"; ctx.beginPath(); ctx.ellipse(sx(x), sy(y), r, r * 0.72, 0, 0, 7); ctx.fill();
+  ctx.fillStyle = hat; ctx.beginPath(); ctx.arc(sx(x), sy(y), r * 0.55, 0, 7); ctx.fill(); }
+function figure(x, y, o) {
+  const u = clamp(k * 0.42, 2.4, 9), X = sx(x), Y = sy(y), step = o.walk ? Math.sin(anim * 9 + o.ph) : 0;
+  ctx.fillStyle = "rgba(0,0,0,.28)"; ctx.beginPath(); ctx.ellipse(X, Y, u * 1.5, u * 0.55, 0, 0, 7); ctx.fill();
+  ctx.fillStyle = "#2B3440"; ctx.fillRect(X - u * 0.95 + step * u * 0.35, Y - u * 2, u * 0.8, u * 2); ctx.fillRect(X + u * 0.15 - step * u * 0.35, Y - u * 2, u * 0.8, u * 2);
+  ctx.fillStyle = o.shirt; ctx.fillRect(X - u * 1.55, Y - u * 4.3, u * 0.55, u * 1.9); ctx.fillRect(X + u, Y - u * 4.3, u * 0.55, u * 1.9);
+  ctx.fillStyle = o.vest; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(X - u * 1.05, Y - u * 4.5, u * 2.1, u * 2.7, u * 0.4) : ctx.rect(X - u * 1.05, Y - u * 4.5, u * 2.1, u * 2.7); ctx.fill();
+  if (o.stripe) { ctx.fillStyle = "#E9EEF2"; ctx.fillRect(X - u * 1.05, Y - u * 3.3, u * 2.1, u * 0.38); }
+  ctx.fillStyle = "#D9A77E"; ctx.beginPath(); ctx.arc(X, Y - u * 5.25, u * 0.78, 0, 7); ctx.fill();
+  if (o.hat) { ctx.fillStyle = o.hat; ctx.beginPath(); ctx.arc(X, Y - u * 5.45, u * 0.85, Math.PI, 0); ctx.fill(); ctx.fillRect(X - u * 1.15, Y - u * 5.5, u * 2.3, u * 0.32); }
+  else { ctx.fillStyle = "#2A2420"; ctx.beginPath(); ctx.arc(X, Y - u * 5.45, u * 0.8, Math.PI, 0); ctx.fill(); }
+  if (o.sel) { ctx.strokeStyle = "#F2C14E"; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(X, Y, u * 2.6 + 2 * Math.sin(anim * 5), u * 1.1 + Math.sin(anim * 5), 0, 0, 7); ctx.stroke(); }
+  if (o.name) { ctx.font = `600 ${o.sel ? 13 : 11}px Oswald, "Arial Narrow", sans-serif`; const w = ctx.measureText(o.name).width + 8, ty = Y - u * 6.5 - 8;
+    ctx.fillStyle = o.sel ? "#F2C14E" : "rgba(17,20,24,.82)"; ctx.fillRect(X - w / 2, ty - 8, w, 15);
+    ctx.fillStyle = o.sel ? "#141414" : "#F4F1E8"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(o.name, X, ty); }
+}
+
+function personAt(p) {
+  if (p.kind === "office") { const [x, y] = OFFICE[p.slot]; return { x, y, walk: false }; }
+  if (p.kind === "walk") { const v = shuttle(WALKS[p.slot], 26 + p.slot * 3, p.slot * 0.17); return { x: v.x, y: v.y, walk: true }; }
+  const [x, y] = POSTS[p.slot], i = p.slot; return { x: x + 0.4 * Math.sin(anim * 0.7 + i * 2.1), y: y + 0.3 * Math.cos(anim * 0.5 + i), walk: false };
+}
+let selP = null, NOW_P = [];
+const wcirc = (x, y, r, c) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(sx(x), sy(y), Math.max(1.2, r * k), 0, 7); ctx.fill(); };
+
+function sprite(x, y, a, draw) { ctx.save(); ctx.translate(sx(x), sy(y)); ctx.scale(k, k * SY); ctx.rotate(-a); ctx.lineJoin = "round"; draw(ctx); ctx.restore(); }
+function rr(g, x, y, w, h, r, fill) { g.beginPath(); if (g.roundRect) g.roundRect(x, y, w, h, Math.min(r, w / 2, h / 2)); else g.rect(x, y, w, h); g.fillStyle = fill; g.fill(); }
+function lin(g, x0, y0, x1, y1, stops) { const gr = g.createLinearGradient(x0, y0, x1, y1); stops.forEach(([o, c]) => gr.addColorStop(o, c)); return gr; }
+const SHADOW = "rgba(20,25,30,.30)";
+function wheels(g, xs, w, d = 0.95) { g.fillStyle = "#16181B"; xs.forEach(x => { g.fillRect(x - d / 2, -w / 2 - 0.18, d, 0.32); g.fillRect(x - d / 2, w / 2 - 0.14, d, 0.32); }); }
+
+function truck(x, y, a, len, w, cab, body, kind) { sprite(x, y, a, g => {
+  const L = len / 2, cabL = 2.3, tx = L - cabL - 0.35;
+  rr(g, -L + 0.35, -w / 2 + 0.45, len, w, 0.35, SHADOW);
+  wheels(g, kind === "tank" ? [-L + 1.2, -L + 2.3, tx - 1.2, L - 1.1] : [-L + 1.1, -L + 2.2, -L + 3.3, L - 1.6, L - 0.7], w);
+  if (kind === "tank") { rr(g, -L, -w / 2 + 0.1, tx + L, w - 0.2, w / 2, lin(g, 0, -w / 2, 0, w / 2, [[0, "#7F8A94"], [0.45, "#E9EDF0"], [1, "#6E7882"]]));
+    g.strokeStyle = "rgba(0,0,0,.25)"; g.lineWidth = 0.08; [-L + 2.5, -L + 5, -L + 7.4].forEach(xx => { if (xx < tx - 0.5) { g.beginPath(); g.moveTo(xx, -w / 2 + 0.2); g.lineTo(xx, w / 2 - 0.2); g.stroke(); } });
+    rr(g, -L + 3, -0.35, 1.2, 0.7, 0.2, "#5B6670"); }
+  else if (kind === "flat") { rr(g, -L, -w / 2, tx + L, w, 0.15, "#5E4A36");
+    for (let i = 0; i < 4; i++) rr(g, -L + 0.3 + i * ((tx + L - 0.6) / 4), -w / 2 + 0.25, (tx + L - 0.6) / 4 - 0.25, w - 0.5, 0.1, i % 2 ? "#3A2A1C" : "#4A3524"); }
+  else { rr(g, -L, -w / 2, tx + L, w, 0.15, lin(g, 0, -w / 2, 0, w / 2, [[0, body], [0.5, shade(body, 0.22)], [1, shade(body, -0.25)]]));
+    g.strokeStyle = "rgba(0,0,0,.22)"; g.lineWidth = 0.07; for (let xx = -L + 0.5; xx < tx - 0.2; xx += 0.55) { g.beginPath(); g.moveTo(xx, -w / 2 + 0.12); g.lineTo(xx, w / 2 - 0.12); g.stroke(); } }
+  rr(g, tx + 0.15, -w / 2 + 0.15, cabL, w - 0.3, 0.45, lin(g, 0, -w / 2, 0, w / 2, [[0, shade(cab, -0.2)], [0.5, shade(cab, 0.2)], [1, shade(cab, -0.3)]]));
+  rr(g, tx + cabL - 0.55, -w / 2 + 0.3, 0.42, w - 0.6, 0.15, "#1F2B36");                 
+  rr(g, tx + 0.5, -w / 2 + 0.45, 1.1, w - 0.9, 0.2, "rgba(255,255,255,.18)");            
+  g.fillStyle = "#1A1C1F"; g.fillRect(tx + cabL - 0.8, -w / 2 - 0.3, 0.2, 0.3); g.fillRect(tx + cabL - 0.8, w / 2, 0.2, 0.3);   
+}); }
+function car(x, y, a, len, w, body) { sprite(x, y, a, g => { const L = len / 2;
+  rr(g, -L + 0.25, -w / 2 + 0.3, len, w, 0.6, SHADOW); wheels(g, [-L + 0.85, L - 0.85], w, 0.6);
+  rr(g, -L, -w / 2, len, w, 0.6, lin(g, 0, -w / 2, 0, w / 2, [[0, shade(body, -0.2)], [0.5, shade(body, 0.25)], [1, shade(body, -0.3)]]));
+  rr(g, L - 1.45, -w / 2 + 0.2, 0.55, w - 0.4, 0.2, "#1F2B36"); rr(g, -L + 0.35, -w / 2 + 0.25, 0.4, w - 0.5, 0.15, "#1F2B36");
+  rr(g, -L + 0.85, -w / 2 + 0.3, len - 2.4, w - 0.6, 0.3, shade(body, 0.08)); }); }
+
+function loader(x, y, a, len, w, load) { sprite(x, y, a, g => { const L = len / 2;
+  rr(g, -L + 0.25, -w / 2 + 0.3, len, w, 0.3, SHADOW); wheels(g, [-L + 0.75, L - 1.35], w + 0.1, 0.8);
+  rr(g, -L, -w / 2 + 0.1, len - 0.8, w - 0.2, 0.3, lin(g, 0, -w / 2, 0, w / 2, [[0, "#C9961C"], [0.5, "#F5CB45"], [1, "#B8860B"]]));
+  rr(g, -L + 0.9, -w / 2 + 0.3, 1.1, w - 0.6, 0.2, "#2A2D31"); rr(g, -L + 1.05, -w / 2 + 0.45, 0.8, w - 0.9, 0.15, "#4D6A82");   
+  rr(g, L - 0.95, -w / 2 - 0.15, 0.95, w + 0.3, 0.15, "#5C6066");                                                                   
+  if (load) rr(g, L - 0.85, -w / 2, 0.75, w, 0.3, load); }); }
+
+function forklift(x, y, a, len, w, load) { sprite(x, y, a, g => { const L = len / 2;
+  rr(g, -L + 0.2, -w / 2 + 0.25, len, w, 0.25, SHADOW); wheels(g, [-L + 0.5, L - 0.9], w, 0.55);
+  rr(g, -L, -w / 2, len - 0.6, w, 0.25, lin(g, 0, -w / 2, 0, w / 2, [[0, "#C9961C"], [0.5, "#F5CB45"], [1, "#B8860B"]]));
+  rr(g, -L + 0.2, -w / 2 + 0.2, 0.55, w - 0.4, 0.15, "#2A2D31");
+  g.fillStyle = "#3A3D42"; g.fillRect(L - 0.65, -w / 2 + 0.1, 0.15, w - 0.2); g.fillRect(L - 0.5, -w / 2 + 0.25, 0.75, 0.12); g.fillRect(L - 0.5, w / 2 - 0.37, 0.75, 0.12);
+  if (load) rr(g, L - 0.45, -w / 2 + 0.05, 0.85, w - 0.1, 0.2, load); }); }
+
+function hull(g, L, w, fill) { g.beginPath(); g.moveTo(-L / 2, -w / 2); g.lineTo(L / 2 - w * 0.55, -w / 2); g.quadraticCurveTo(L / 2, -w * 0.2, L / 2 + 0.2, 0);
+  g.quadraticCurveTo(L / 2, w * 0.2, L / 2 - w * 0.55, w / 2); g.lineTo(-L / 2, w / 2); g.closePath(); g.fillStyle = fill; g.fill(); }
+
+function barge(x, y, a, L, w, fill) { sprite(x, y, a, g => {
+  g.save(); g.translate(0.6, 0.8); hull(g, L, w, "rgba(10,30,40,.30)"); g.restore();
+  hull(g, L, w, "#2E4257"); hull(g, L - 0.7, w - 0.7, "#5A7088");
+  const hx0 = -L / 2 + 4.6, hx1 = L / 2 - w * 0.6 - 0.4;
+  rr(g, hx0, -w / 2 + 0.75, hx1 - hx0, w - 1.5, 0.2, "#26313B");
+  if (fill > 0.02) { const pw = (hx1 - hx0 - 0.4) * Math.min(1, 0.35 + fill * 0.65);
+    rr(g, hx0 + 0.2, -w / 2 + 0.95, pw, w - 1.9, 0.9, lin(g, 0, -w / 2, 0, w / 2, [[0, "#6B3E1F"], [0.5, "#9C6534"], [1, "#5E361B"]]));
+    g.fillStyle = "rgba(40,20,8,.35)"; for (let i = 0; i < 26; i++) g.fillRect(hx0 + 0.4 + rnd(i * 1.7) * (pw - 0.8), -w / 2 + 1.1 + rnd(i * 2.9) * (w - 2.3), 0.22, 0.22); }
+  else { g.strokeStyle = "rgba(255,255,255,.08)"; g.lineWidth = 0.08; for (let xx = hx0 + 0.6; xx < hx1; xx += 1.1) { g.beginPath(); g.moveTo(xx, -w / 2 + 0.8); g.lineTo(xx, w / 2 - 0.8); g.stroke(); } }
+  rr(g, -L / 2 + 0.6, -w / 2 + 0.9, 3.4, w - 1.8, 0.3, "#E9EDF0"); rr(g, -L / 2 + 2.9, -w / 2 + 1.1, 0.45, w - 2.2, 0.1, "#2B4A66");   
+  g.fillStyle = "#15171A"; for (let xx = -L / 2 + 2; xx < L / 2 - 3; xx += 3.2) { g.beginPath(); g.arc(xx, -w / 2, 0.28, 0, 7); g.fill(); g.beginPath(); g.arc(xx, w / 2, 0.28, 0, 7); g.fill(); }
+}); }
+
+function ship(x, y, a, L, w) { sprite(x, y, a, g => {
+  g.fillStyle = "rgba(255,255,255,.25)"; g.beginPath(); g.moveTo(-L / 2, -w / 2 + 0.6); g.lineTo(-L / 2 - 14, -w / 2 - 2); g.lineTo(-L / 2 - 14, w / 2 + 2); g.lineTo(-L / 2, w / 2 - 0.6); g.fill();
+  g.save(); g.translate(0.7, 0.9); hull(g, L, w, "rgba(10,30,40,.30)"); g.restore();
+  hull(g, L, w, "#1E2E3E"); hull(g, L - 0.8, w - 0.8, "#8E3B2E"); hull(g, L - 1.6, w - 1.6, "#5D6670");
+  const C = ["#C0392B", "#2F6FC4", "#E8B92E", "#1E8449", "#D35400", "#7F8C8D", "#2C3E50", "#C0392B", "#16A085"];
+  for (let i = 0; i < 6; i++) for (let j = 0; j < 3; j++) { const cx0 = -L / 2 + 7.5 + i * 3.6, cy0 = -w / 2 + 1.1 + j * ((w - 2.2) / 3);
+    rr(g, cx0, cy0, 3.3, (w - 2.2) / 3 - 0.25, 0.08, C[(i * 3 + j * 5) % C.length]);
+    g.fillStyle = "rgba(255,255,255,.18)"; g.fillRect(cx0, cy0, 3.3, 0.18); }
+  rr(g, -L / 2 + 1, -w / 2 + 0.9, 5, w - 1.8, 0.3, "#F1F3F5"); rr(g, -L / 2 + 4.6, -w / 2 + 0.7, 0.9, w - 1.4, 0.2, "#E2E6EA"); rr(g, -L / 2 + 5.1, -w / 2 + 1, 0.3, w - 2, 0.1, "#2B4A66");
+}); }
+function vehicle(x, y, a, len, wid, body, cab, load) {
+  ctx.save(); ctx.translate(sx(x), sy(y)); ctx.rotate(-a);
+  ctx.fillStyle = "rgba(0,0,0,.4)"; ctx.fillRect(-len / 2 * k + 2, -wid / 2 * k + 2, len * k, wid * k);
+  ctx.fillStyle = body; ctx.fillRect(-len / 2 * k, -wid / 2 * k, len * k, wid * k);
+  if (cab) { ctx.fillStyle = cab; ctx.fillRect(len / 2 * k - len * 0.28 * k, -wid / 2 * k, len * 0.28 * k, wid * k); }
+  if (load) { ctx.fillStyle = load; ctx.fillRect(-len / 2 * k + 0.4 * k, -wid / 2 * k + 0.35 * k, len * 0.62 * k, wid * k - 0.7 * k); }
+  ctx.restore();
+}
+function shuttle(P, period, phase) {    
+  const u = ((anim / period + phase) % 1), there = u < 0.5, q = there ? u * 2 : 2 - u * 2;
+  const p = polyAt(P, clamp(q * 1.15 - 0.075, 0, 1)); return Object.assign(p, { loaded: there, a: there ? p.a : p.a + Math.PI });
+}
+
+function frame() {
+  const now = performance.now(), dt = Math.min(0.1, (now - lastReal) / 1000); lastReal = now;
+  anim += dt * Math.min(speed, 6);
+  const ms = simNow(), S = state(ms), h = S.h, night = h < 5.6 || h > 18.4 ? 1 : h < 6.4 ? (6.4 - h) / 0.8 : h > 17.6 ? (h - 17.6) / 0.8 : 0;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.fillStyle = P.bg; ctx.fillRect(0, 0, W, H);
+  ctx.imageSmoothingEnabled = true;
+  ctx.setTransform(dpr * k, 0, 0, -dpr * k * SY, dpr * (W / 2 - cx * k), dpr * (H / 2 + cy * k * SY));
+  drawStatic(ctx, { x0: wx(0), x1: wx(W), y0: wy(H), y1: wy(0) });
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  
+  ctx.lineCap = "butt";
+  BELTS.forEach(P => { ctx.strokeStyle = "#0E0F11"; ctx.lineWidth = Math.max(2, 1.1 * k); ctx.setLineDash([]); ctx.beginPath(); P.forEach(([x, y], i) => i ? ctx.lineTo(sx(x), sy(y)) : ctx.moveTo(sx(x), sy(y))); ctx.stroke();
+    ctx.strokeStyle = "#8A6A44"; ctx.lineWidth = Math.max(1, 0.5 * k); ctx.setLineDash([0.9 * k, 1.3 * k]); ctx.lineDashOffset = -anim * 1.6 * k; ctx.stroke(); });
+  ctx.setLineDash([]);
+
+  
+  const carbs = CARB_Y.map(y => [73.6, y]);
+  carbs.forEach(([x0, y], i) => {
+    const pulse = 0.55 + 0.25 * Math.sin(anim * 2 + i);
+    wrect(x0 + 14, y - 1.6, 7, 3.2, `rgba(232,96,42,${pulse})`);
+    for (let s = 0; s < 6; s++) { const xx = x0 + 8.9 + ((s * 2.7 + anim * 1.2) % 16); wrect(xx, y - 1.6, 0.35, 3.2, "rgba(0,0,0,.25)"); }
+    for (let s = 0; s < 3; s++) { const xx = x0 + 35.6 + ((s * 2.8 + anim * 1.6) % 8.2); wrect(xx, y - 1.35, 0.3, 2.7, "rgba(0,0,0,.3)"); }
+  });
+  
+  [61, 68, 75, 82, 89, 96].forEach((y, i) => {
+    const off = S.maint && i === S.mk;
+    if (!off) { const g = ctx.createLinearGradient(sx(146), 0, sx(180), 0); g.addColorStop(0, "rgba(255,106,43,0)"); g.addColorStop(0.55, `rgba(255,106,43,${0.35 + 0.15 * Math.sin(anim * 1.7 + i)})`); g.addColorStop(1, "rgba(255,170,60,.85)");
+      ctx.fillStyle = g; ctx.fillRect(sx(146), sy(y + 2.1), 34 * k, 4.2 * k);
+      for (let s = 0; s < 9; s++) { const xx = 146.3 + ((s * 3.8 + anim * 1.4) % 33.5); wrect(xx, y - 2.1, 0.35, 4.2, "rgba(0,0,0,.22)"); }
+      wrect(180.2, y - 1.4, 0.5, 2.8, `rgba(255,140,50,${0.6 + 0.4 * Math.sin(anim * 6 + i)})`);
+    } else { wrect(146, y - 2.1, 34, 4.2, "rgba(40,44,50,.75)"); }
+  });
+  
+  [91, 99].forEach((y, i) => wrect(50, y - 0.3, 3.5, 3.8, `rgba(255,120,50,${0.5 + 0.3 * Math.sin(anim * 2.4 + i)})`));
+  [34.5, 42].forEach((y, i) => wrect(143.4, y - 0.9, 1.6, 1.8, `rgba(255,160,60,${0.6 + 0.4 * Math.sin(anim * 7 + i)})`));
+  
+  const pileK = clamp(0.55 + S.shell / (D.shellAU + D.shellB1) * 0.45 - h / 24 * 0.45, 0.35, 1);
+  [[80, 15], [95, 14], [110, 15], [124, 14], [79, 29], [97, 30], [112, 32], [124, 34], [100, 42]].forEach(([x, y], i) => wcirc(x, y, (4 + (i % 3)) * pileK, i % 2 ? "#7A4A26" : "#8B5530"));
+  [[15, 14], [27, 14], [14, 26], [15, 37], [29, 36]].forEach(([x, y], i) => wcirc(x, y, (3.8 + (i % 2)) * pileK, "#8B5530"));
+  
+  ctx.strokeStyle = "rgba(127,200,216,.9)"; ctx.lineWidth = Math.max(1, 0.28 * k); ctx.setLineDash([0.6 * k, 1.4 * k]); ctx.lineDashOffset = -anim * 1.2 * k;
+  const vpipe = P => { ctx.beginPath(); P.forEach(([x, y], i) => i ? ctx.lineTo(sx(x), sy(y)) : ctx.moveTo(sx(x), sy(y))); ctx.stroke(); };
+  CARB_Y.forEach(y => vpipe([[100.6, y + 1.2], [100.6, y + 2.7], [71, y + 2.7]]));
+  vpipe([[71, CARB_Y[CARB_Y.length - 1] + 2.7], [71, 52], [56, 52], [56, 26]]); ctx.setLineDash([]);
+  { const tk = D.scene.find(o => o.k === "tanks"); for (let i = 0; i < 3; i++) for (let j = 0; j < 2; j++) {
+      const x = tk.x + 3.8 + i * 6.7, y = tk.y + 4.8 + j * 8.4, a0 = Math.PI / 2;
+      ctx.strokeStyle = "#7A4E2A"; ctx.lineWidth = Math.max(1.5, 0.45 * k); ctx.beginPath(); ctx.arc(sx(x), sy(y), 2.3 * k, a0, a0 - S.tankK * 6.283, true); ctx.stroke(); } }
+  for (let i = 0; i < Math.min(14, Math.floor(S.ref * 5 + 4)); i++) wrect(48 + (i % 7) * 2, 31.4 + Math.floor(i / 7) * 2, 1.5, 1.5, "#E8E6DE");
+  
+  wrect(166, 9.8, 2.6, 3.6, `rgba(255,120,50,${0.5 + 0.3 * Math.sin(anim * 2.2)})`);
+  wrect(149.6, 20.1, 3.8, 1.8, `rgba(232,194,46,${0.25 + 0.25 * Math.max(0, Math.sin(anim * 4))})`);
+  for (let s2 = 0; s2 < 5; s2++) wrect(154.2 + ((s2 * 2 + anim * 1.5) % 9.6), 20.6, 0.5, 0.8, "#222");
+  { const nb = clamp(Math.round(S.bbqStock), 0, 24); for (let i = 0; i < nb; i++) wrect(166.5 + (i % 3) * 2.3, 15.5 + Math.floor(i / 3) * 1.25, 2, 1.05, i % 2 ? "#3A2A1C" : "#4A3524"); }
+  
+  const slots = []; [116.5, 119.5, 122.5].forEach(y => { for (let x = 153; x < 189; x += 1.45) slots.push([x, y]); });
+  const nb = clamp(Math.round(S.stockBags / 2), 0, slots.length);
+  for (let i = 0; i < nb; i++) wrect(slots[i][0] - 0.55, slots[i][1] - 0.55, 1.1, 1.1, "#EDEBE2");
+
+  
+  { const L = 420, u = (anim * 4 / L + 0.35) % 2, dir = u < 1 ? 1 : -1, x = -110 + (u < 1 ? u : 2 - u) * L, y = -36;
+    ship(x, y, dir > 0 ? 0 : Math.PI, 36, 8.5);
+    if (k > 2.4) tag(x, y + 6.5, "tàu container «Mekong Star»", "#7FC8D8"); }
+  
+  S.barges.forEach(q => { if (!q.on) return;
+    barge(q.x, q.y, Math.PI, 22, 7, q.k);
+    if (q.ph === "unload") { const cxr = q.b.to === "au" ? 110 : 31, u = (Math.sin(anim * 1.1) + 1) / 2, gy = -22 + u * 30;
+      wrect(cxr - 0.3, -24, 0.6, 33, "rgba(242,193,78,.85)"); wrect(cxr - 1.1, gy - 1.1, 2.2, 2.2, "#2B2B2B"); }
+    if (k > 2.4) tag(q.x, q.y + 6, `«${q.b.name}» ${fmt(q.tons - q.got)} tấn`, "#7FC8D8");
+  });
+  [31, 110].forEach(x => { wrect(x - 2.5, -11, 5, 1.2, "#E8C22E"); });
+  
+  [[[[25, 30], [25, 50.2], [80.8, 50.2]], 40, 0], [[[104, 36], [104, 50.2], [80.8, 50.2]], 32, 0.3], [[[120, 30], [120, 47], [80.8, 50.2]], 38, 0.7]].forEach(([P, per, ph]) => {
+    const v = shuttle(P, per, ph); loader(v.x, v.y, v.a, 3.8, 2.1, v.loaded ? "#8B5530" : null); });
+  
+  { const v = shuttle([[130, 92], [136, 92], [136, 27], [145.5, 24]], 46, 0.15); loader(v.x, v.y, v.a, 3.4, 1.9, v.loaded ? "#2A2522" : null); }
+  
+  [[[[12, 126.2], [54, 126.2]], 20, 0], [[[152, 111.5], [186, 111.5]], 22, 0.4], [[[166, 127.5], [158, 128.8], [150, 128.8]], 16, 0.2]].forEach(([P, per, ph]) => {
+    const v = shuttle(P, per, ph); forklift(v.x, v.y, v.a, 2.8, 1.4, v.loaded ? "#EDEBE2" : null); });
+  
+  S.trucks.forEach(q => { if (!q.on) return; const c = q.t.c;
+    truck(q.x, q.y, q.a, q.t.kind === "wv" ? 11 : q.t.kind === "bbq" ? 10 : 15, 2.5, q.t.kind === "wv" ? "#2F6FC4" : "#E9ECEF", c, q.t.kind === "wv" ? "tank" : q.t.kind === "bbq" ? "flat" : "box");
+    if (k > 2.4) tag(q.x, q.y + 3.6, q.ph === "load" ? `${q.t.plate} · bốc hàng ${Math.round(q.k * 100)}%` : q.t.plate, "#F0935A"); });
+  
+  for (let i = 0; i < 6; i++) { const dir = i % 2 ? 1 : -1, x = ((anim * (6 + i) * 1.2 + i * 61) % 360) - 80;
+    const vx = dir > 0 ? x : 280 - x - 80, vy = dir > 0 ? 155.4 : 159.6, va = dir > 0 ? 0 : Math.PI, col = ["#C0392B", "#E8EDF2", "#2F6FC4", "#7F8C8D", "#E8B92E", "#1E8449"][i];
+    if (i % 3) car(vx, vy, va, 4.4, 1.85, col); else truck(vx, vy, va, 11, 2.3, col, "#C9CED4", "box"); }
+
+  
+  NOW_P = ROSTER.filter(p => onDuty(p, S)).map(p => Object.assign({ p }, personAt(p))).sort((a, b) => b.y - a.y);
+  const names = k > 4.6;
+  NOW_P.forEach(q => { const off = q.p.crew === OFF, sel = selP === q.p.id;
+    figure(q.x, q.y, { walk: q.walk, ph: q.p.id, shirt: off ? "#F4F2EC" : "#2E6FB0", vest: off ? "#F4F2EC" : "#F07C2A", stripe: !off, hat: off ? null : SHIFT_HAT[q.p.crew], sel,
+      name: names || sel ? q.p.given : null }); });
+
+  
+  if (NIGHT && night > 0) {
+    ctx.fillStyle = `rgba(6,10,24,${0.42 * night})`; ctx.fillRect(0, 0, W, H);
+    ctx.globalCompositeOperation = "lighter";
+    
+    LAMPS.forEach(([x, y]) => { const r = 5 * k, g = ctx.createRadialGradient(sx(x), sy(y), 0, sx(x), sy(y), r);
+      g.addColorStop(0, `rgba(255,214,150,${0.20 * night})`); g.addColorStop(1, "rgba(255,214,150,0)"); ctx.fillStyle = g; ctx.fillRect(sx(x) - r, sy(y) - r, r * 2, r * 2);
+      ctx.fillStyle = `rgba(255,236,190,${0.9 * night})`; ctx.beginPath(); ctx.arc(sx(x), sy(y), Math.max(1.2, 0.3 * k), 0, 7); ctx.fill(); });
+    [[163, 78, 22], [96, 76, 20], [148, 38, 8]].forEach(([x, y, r]) => { const R = r * k, g = ctx.createRadialGradient(sx(x), sy(y), 0, sx(x), sy(y), R);
+      g.addColorStop(0, `rgba(255,110,40,${0.22 * night})`); g.addColorStop(1, "rgba(255,110,40,0)"); ctx.fillStyle = g; ctx.fillRect(sx(x) - R, sy(y) - R, R * 2, R * 2); });
+    ctx.globalCompositeOperation = "source-over";
+  }
+
+  
+  const big = k < 3.2;
+  [["Xưởng Khối 1", 33, 116.5, D.col.b1], ["Kho than shisha", 33, 132.6, D.col.fg], ["Cacbon hóa và nghiền", 100, 98.7, D.col.ac], ["Hoạt hóa bằng hơi nước", 166, 97.8, D.col.act],
+   ["Đóng gói và kho than hoạt tính", 166, 124, D.col.fg], ["Mái che gáo dừa than hoạt tính", 102, 46.2, D.col.raw], ["Mái che Khối 1", 23, 42.6, D.col.raw], ["Lò hơi", 152.5, 46.4, "#AAB4BE"],
+   ["Văn phòng và KCS", 87, 143.6, "#EEEAE0"], ["Nhà khách", 115, 142.6, "#EEEAE0"], ["Bến", 67, -6, "#7FC8D8"], ["Than BBQ ép viên", 157, 5.6, D.col.bbq],
+   ["Xưởng sửa chữa", 120, 125.2, "#AAB4BE"], ["Giấm gỗ thô", 52.5, 27.6, D.col.liq], ["Tinh chế giấm gỗ", 55, 45.6, D.col.liq], ["Cổng", 160, 153.3, "#EEEAE0"]]
+    .forEach(([t, x, y, c]) => { if (big && ["Xưởng sửa chữa", "Tinh chế giấm gỗ", "Cổng", "Than BBQ ép viên", "Nhà khách"].includes(t)) return;
+      if (k < 2.4) t = { "Cacbon hóa và nghiền": "Cacbon hóa", "Hoạt hóa bằng hơi nước": "Hoạt hóa", "Đóng gói và kho than hoạt tính": "Kho than hoạt tính", "Mái che gáo dừa than hoạt tính": "Gáo dừa THT", "Mái che Khối 1": "Gáo dừa K1" }[t] || t;
+      label(x, y, t.toUpperCase(), big ? 11 : 13, c); });
+  if (k > 3.6) {
+    
+    carbs.forEach(([x0, y], i) => tag(x0 + 17.5, y - 3.2, i === 4 ? `Số 5 · K1 · ${temp(625, 40, i)} °C · ${fmt(D.shellB1 / 24, 1)} t/h`
+      : `Số ${i + 1} · ${temp(550, 30, i)} °C · ${fmt(D.shellAU / 4 / 24, 1)} t/h`, "#FF8A4C"));
+    tag(64, 70, `giấm gỗ · ${temp(350, 50, 7)} °C`, "#7FC8D8");
+    [61, 68, 75, 82, 89, 96].forEach((y, i) => tag(163, y - 3.1, S.maint && i === S.mk ? `Số ${i + 1} · KIỂM TRA` : `Số ${i + 1} · ${temp(935, 18, i + 9)} °C · 210 kg/h`, S.maint && i === S.mk ? "#F2C14E" : "#FF8A4C"));
+    tag(151, 27.2, `hơi ${fmt(temp(118, 3, 4) / 10, 1)} bar`, "#7FC8D8");
+  } else {
+    const sm = k < 2.4;
+    tag(102, 79, sm ? `${temp(565, 20, 1)} °C` : `5 lò · ${temp(565, 20, 1)} °C`, "#FF8A4C");
+    tag(166, 79, sm ? `${S.maint ? 5 : 6}/6 · ${temp(935, 12, 2)} °C` : `${S.maint ? 5 : 6}/6 lò · ${temp(935, 12, 2)} °C`, "#FF8A4C"); 
+  }
+  drawRadar(S);
+  return S;
+}
+
+
+const rc = $("radar"), rx = rc.getContext("2d");
+function drawRadar(S) {
+  const R = rc.clientWidth, d = Math.min(2, devicePixelRatio || 1); if (rc.width !== R * d) { rc.width = rc.height = R * d; }
+  rx.setTransform(d, 0, 0, d, 0, 0); rx.clearRect(0, 0, R, R);
+  rx.save(); rx.beginPath(); rx.arc(R / 2, R / 2, R / 2, 0, 7); rx.clip();
+  const s = R / 250, X = x => R / 2 + (x - 100) * s, Y = y => R / 2 - (y - 65) * s;
+  rx.fillStyle = "#2A2D30"; rx.fillRect(0, 0, R, R); rx.fillStyle = "#0E3540"; rx.fillRect(0, Y(-14), R, R);
+  rx.fillStyle = "#3A3E44"; rx.fillRect(X(0), Y(150), 200 * s, 162 * s); rx.fillStyle = "#24272B"; rx.fillRect(0, Y(163), R, 11 * s);
+  D.scene.forEach(o => { if (!o.w) return; rx.fillStyle = "#6E7780"; rx.fillRect(X(o.x), Y(o.y + o.d), o.w * s, o.d * s); });
+  S.barges.forEach(q => { if (q.on) { rx.fillStyle = "#7FC8D8"; rx.fillRect(X(q.x) - 3, Y(q.y) - 1.5, 6, 3); } });
+  S.trucks.forEach(q => { if (q.on) { rx.fillStyle = "#F0935A"; rx.beginPath(); rx.arc(X(q.x), Y(q.y), 2.4, 0, 7); rx.fill(); } });
+  rx.strokeStyle = "#F2C14E"; rx.lineWidth = 1.4; rx.strokeRect(X(wx(0)), Y(wy(0)), W / k * s, H / (k * SY) * s);
+  rx.restore(); rx.fillStyle = "#EEEAE0"; rx.font = "600 11px Oswald, sans-serif"; rx.textAlign = "center"; rx.fillText("B", R / 2, 12);
+}
+
+
+const DOW = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"], MON = ["Th1", "Th2", "Th3", "Th4", "Th5", "Th6", "Th7", "Th8", "Th9", "Th10", "Th11", "Th12"];
+function panels(S, ms) {
+  const t = new Date(ms + TZ);
+  $("cTime").textContent = [t.getUTCHours(), t.getUTCMinutes(), t.getUTCSeconds()].map(v => String(v).padStart(2, "0")).join(":");
+  $("mclock").textContent = $("cTime").textContent.slice(0, 5) + (speed > 1 ? "  ×" + speed : "");
+  $("cDate").textContent = `${DOW[t.getUTCDay()]}, ${t.getUTCDate()} ${MON[t.getUTCMonth()]} · Việt Nam`;
+  $("tAC").textContent = fmt(S.ac, 1); $("tBags").textContent = fmt(Math.floor(S.ac / 0.5)); $("tShell").textContent = fmt(S.shell);
+  $("tCubes").textContent = fmt(S.cubes, 1); $("tCont").textContent = fmt(S.cont + S.contB1);
+  $("tBbq").textContent = fmt(S.bbq, 1); $("tVin").textContent = fmt(S.vin, 1); $("tVinS").textContent = `tấn giấm gỗ, trong đó ${fmt(S.ref, 1)} tấn đã tinh chế`; $("tRev").textContent = "$" + fmt(S.rev);
+  $("tEb").textContent = "$" + fmt(S.ebitda); $("tEbS").textContent = `EBITDA trong ngày · ${S.rev ? Math.round(S.ebitda / S.rev * 100) : 0}% doanh thu`;
+  const [n, a, b] = SHIFTS[S.sh]; $("shName").textContent = `ca ${n} · ${hhmm(a)}–${hhmm(b)} · tổ ${BRIG[crewOn(S.sh, shiftDay(S))]}`;
+  $("shPeople").textContent = `${CREW_N} trong xưởng` + (officeOpen(S) ? ` + ${OFFICE_N} ở văn phòng` : "");
+  $("shAct").textContent = S.maint ? `5/6 · lò số ${S.mk + 1} đang kiểm tra` : "6/6 · 850–1.000 °C";
+  $("shAct").className = "pill " + (S.maint ? "warn" : "hot");
+  const bq = S.barges.find(q => q.on);
+  $("shWharf").textContent = bq ? (bq.ph === "unload" ? `dỡ hàng «${bq.b.name}» ${Math.round((1 - bq.k) * 100)}%` : bq.ph === "in" ? `«${bq.b.name}» đang đến` : `«${bq.b.name}» đang rời bến`) : "trống";
+  $("shWharf").className = "pill " + (bq ? "ok" : "");
+  $("shTank").textContent = `đầy ${Math.round(S.tankK * 100)}%`;
+  $("shStock").textContent = `${fmt(Math.max(0, S.stockBags))} bao jumbo · ${fmt(Math.max(0, S.stockBags) / 2)} tấn`;
+  if (cardId && !cardId.startsWith("p:")) { const L = { act: S.maint ? `Hiện tại: 5 lò đang chạy, số ${S.mk + 1} đang kiểm tra` : "Hiện tại: 6 lò đang chạy, ≈1.260 kg/h",
+    carb: `Hiện tại: 5 lò đang chạy, giấm gỗ thô từ tất cả — ${fmt(S.vin, 1)} tấn từ đầu ngày`, bbq: `Hôm nay: ${fmt(S.bbq, 1)} tấn than BBQ, trên pallet ${fmt(Math.max(0, S.bbqStock), 1)} tấn`,
+    tanks: `Bồn chứa đầy ${Math.round(S.tankK * 100)}%, hôm nay ${fmt(S.vin, 1)} tấn giấm gỗ thô`, purif: `Hôm nay đã tinh chế ${fmt(S.ref, 1)} tấn giấm gỗ`, hall_b1: `Hiện tại: ${fmt(S.cubes, 1)} tấn than shisha từ đầu ngày`, pack_au: `Trong kho: ${fmt(Math.max(0, S.stockBags))} bao jumbo`,
+    wharf: $("shWharf").textContent, shed_au: `Đã nhận hôm nay: ${fmt(S.shell)} tấn`, office: "KCS: chỉ số iốt ≥1.000 mg/g" }[cardId];
+    $("cL").textContent = L || ""; }
+  peoplePanel(S); renderLog(S);
+}
+
+const CH = {
+  chAC: { what: "tấn than hoạt tính", dec: 1, price: () => D.priceAC, extra: v => `≈${fmt(v / 0.5)} bao jumbo 500 kg` },
+  chSh: { what: "tấn gáo dừa nhận từ sà lan", dec: 0, price: () => D.priceShell, extra: () => "nguyên liệu cho than hoạt tính và Khối 1", cost: true },
+  chCu: { what: "tấn than shisha", dec: 1, price: () => D.priceCube, extra: v => `≈${fmt(v / 19.4, 1)} container (mỗi container ≈19 tấn)` },
+  chBq: { what: "tấn than BBQ ép viên", dec: 1, price: () => D.priceBbq, extra: () => "từ than vụn sau khâu nghiền" },
+};
+function chart(id, key, nominal, color, S) {
+  const c = $(id), w = c.clientWidth, h = c.clientHeight, d = Math.min(2, devicePixelRatio || 1), cf = CH[id];
+  if (c.width !== Math.round(w * d)) { c.width = Math.round(w * d); c.height = Math.round(h * d); }
+  const g = c.getContext("2d"); g.setTransform(d, 0, 0, d, 0, 0); g.clearRect(0, 0, w, h);
+  const N = 14, vals = [], days = []; for (let i = N - 1; i >= 0; i--) { const dd = S.d - i; days.push(dd); vals.push(i === 0 ? nominal * dayF(dd, key) * S.h / 24 : nominal * dayF(dd, key)); }
+  const top = nominal * 1.2, L = 34, B = 22, T = 12, bw = (w - L - 8) / N;
+  c._m = { L, bw, N, vals, days, nominal, key, h: S.h };
+  g.font = "500 11px 'JetBrains Mono', monospace"; g.textBaseline = "middle"; g.textAlign = "right";
+  [0, 0.5, 1].forEach(f => { const v = top * f, y = h - B - (h - B - T) * f; g.strokeStyle = THEME === "light" ? "rgba(0,0,0,.08)" : "rgba(255,255,255,.07)"; g.beginPath(); g.moveTo(L, y); g.lineTo(w - 4, y); g.stroke();
+    g.fillStyle = "#9A9F98"; g.fillText(fmt(v), L - 5, y); });
+  const yn = h - B - (h - B - T) * nominal / top; g.strokeStyle = "rgba(242,193,78,.6)"; g.setLineDash([3, 3]); g.beginPath(); g.moveTo(L, yn); g.lineTo(w - 4, yn); g.stroke(); g.setLineDash([]);
+  g.fillStyle = THEME === "light" ? "#9A6A00" : "#F2C14E"; g.textAlign = "left"; g.fillText("định mức " + fmt(nominal, cf.dec), L + 4, yn - 8);
+  const today = THEME === "light" ? "rgba(0,0,0,.08)" : "rgba(255,255,255,.18)", ink = THEME === "light" ? "#1D2326" : "#EEEAE0";
+  vals.forEach((v, i) => { const bh = (h - B - T) * v / top, x = L + i * bw + 2, bwi = bw - 4, last = i === N - 1;
+    g.fillStyle = last ? today : color; g.fillRect(x, h - B - bh, bwi, bh);
+    if (last) { g.strokeStyle = color; g.strokeRect(x + 0.5, h - B - bh + 0.5, bwi - 1, bh - 1); }
+    if (hoverBar.id === id && hoverBar.i === i) { g.strokeStyle = ink; g.lineWidth = 2; g.strokeRect(x + 1, h - B - bh + 1, bwi - 2, bh - 2); g.lineWidth = 1; }
+    
+    const txt = fmt(v, cf.dec); g.font = "600 11px 'JetBrains Mono', monospace"; const tw = g.measureText(txt).width;
+    g.fillStyle = last ? ink : "#FFFFFF";
+    if (tw + 4 <= bwi) { g.textAlign = "center"; const ty = bh > 22 ? h - B - bh + 10 : h - B - bh - 8; if (bh <= 22) g.fillStyle = ink; g.fillText(txt, x + bwi / 2, ty); }
+    else if (bh > tw + 8) { g.save(); g.translate(x + bwi / 2, h - B - bh + 5); g.rotate(Math.PI / 2); g.textAlign = "left"; g.fillText(txt, 0, 0); g.restore(); }
+    else { g.save(); g.translate(x + bwi / 2, h - B - bh - 4); g.rotate(-Math.PI / 2); g.textAlign = "left"; g.fillStyle = ink; g.fillText(txt, 0, 0); g.restore(); } });
+  
+  g.font = "500 11px 'JetBrains Mono', monospace"; g.fillStyle = "#9A9F98";
+  days.forEach((dd, i) => { const t = new Date(dd * DAY), last = i === N - 1, x = L + i * bw + bw / 2;
+    if (last) { g.textAlign = "right"; g.fillText("h.nay", w - 4, h - 9); return; }
+    if (bw < 18 && i % 2) return; g.textAlign = "center"; g.fillText(bw >= 36 ? `${t.getUTCDate()}.${String(t.getUTCMonth() + 1).padStart(2, "0")}` : String(t.getUTCDate()), x, h - 9); });
+}
+
+let hoverBar = { id: null, i: -1 };
+const MONG = ["Th1", "Th2", "Th3", "Th4", "Th5", "Th6", "Th7", "Th8", "Th9", "Th10", "Th11", "Th12"];
+function barTip(c, e) {
+  const m = c._m; if (!m) return; const r = c.getBoundingClientRect(), x = e.clientX - r.left, i = Math.floor((x - m.L) / m.bw);
+  const tip = c.parentElement.querySelector(".ctip");
+  if (i < 0 || i >= m.N) { tip.hidden = true; hoverBar = { id: null, i: -1 }; lastChart = -1; return; }
+  const cf = CH[c.id], v = m.vals[i], t = new Date(m.days[i] * DAY), last = i === m.N - 1, money = v * cf.price();
+  const pct = Math.round((last ? v / (m.nominal * m.h / 24) : v / m.nominal) * 100 - 100);
+  tip.innerHTML = `<b>${last ? `Сегодня к ${hhmm(m.h)}` : `${t.getUTCDate()} ${MONG[t.getUTCMonth()]}`}</b>` +
+    `<span class="v">${fmt(v, cf.dec)} ${cf.what}</span>` +
+    `<span>${cf.extra(v)}</span>` +
+    `<span>${cf.cost ? "giá trị nguyên liệu" : "doanh thu"} ≈ $${fmt(Math.round(money / 100) * 100)}</span>` +
+    `<span class="n">${last ? `к концу суток ≈ ${fmt(m.nominal * dayF(m.days[i], m.key), cf.dec)} т` : `норма ${fmt(m.nominal, cf.dec)} т · ${pct >= 0 ? "+" : ""}${pct}%`}</span>`;
+  tip.hidden = false;
+  const tw = tip.offsetWidth, left = clamp(x - tw / 2, 4, r.width - tw - 4); tip.style.left = left + "px";
+  if (hoverBar.id !== c.id || hoverBar.i !== i) { hoverBar = { id: c.id, i }; lastChart = -1; }
+}
+document.querySelectorAll("canvas.chart").forEach(c => {
+  const tip = document.createElement("div"); tip.className = "ctip"; tip.hidden = true; c.parentElement.appendChild(tip);
+  c.addEventListener("pointermove", e => barTip(c, e)); c.addEventListener("click", e => barTip(c, e));
+  c.addEventListener("pointerleave", () => { tip.hidden = true; hoverBar = { id: null, i: -1 }; lastChart = -1; });
+});
+$("foot").textContent = `Trên biểu đồ, số trên cột là số tấn làm ra trong ngày; di chuột hoặc nhấn vào cột — hiện ngày, quy đổi và doanh thu. Định mức theo mô hình tài chính của dự án: than hoạt tính ${fmt(D.acDay * 365)} tấn/năm (≈${fmt(D.acDay, 1)} tấn/ngày, giá $${fmt(D.priceAC)}/tấn), ` +
+  `than shisha ${D.cubeMonth} tấn/tháng (giá $${fmt(D.priceCube)}/tấn), giấm gỗ ${D.cubeMonth} tấn/tháng (giá $${fmt(D.priceWv)}/tấn, trong đó ${D.refMonth} tấn tinh chế giá $${fmt(D.priceRef)}/tấn), ` +
+  `than BBQ ép viên ${fmt(D.bbqMonth)} tấn/tháng (giá $${fmt(D.priceBbq)}/tấn); doanh thu cả năm $${fmt(D.revYear / 1e6, 2)} triệu và EBITDA $${fmt(D.ebYear / 1e6, 1)} triệu — đúng như mô hình tài chính năm 2029. Gáo dừa từ sà lan ≈${fmt(D.shellAU + D.shellB1)} tấn/ngày (giá $${fmt(D.priceShell)}/tấn gồm vận chuyển). ` +
+  `Mỗi ngày chênh lệch so với định mức ±7%. Tên công nhân, tên sà lan và biển số xe là hư cấu; 20 công nhân mỗi ca, 3 ca mỗi ca 8 giờ và 4 tổ — mỗi người trung bình 42 giờ/tuần (theo luật Việt Nam không quá 48), và 2 người ở văn phòng; giờ làm tính theo lịch của các tổ. Bố trí mặt bằng — phác thảo 3D quy hoạch tổng thể, thiết bị — phác thảo trước khi thiết kế.`;
+
+
+const avatar = p => { const off = p.crew === OFF, hat = off ? "#2A2420" : SHIFT_HAT[p.crew], vest = off ? "#F4F2EC" : "#F07C2A";
+  return `<svg width="26" height="30" viewBox="0 0 20 24" aria-hidden="true"><rect x="6.3" y="18.5" width="3" height="5" fill="#2B3440"/><rect x="10.7" y="18.5" width="3" height="5" fill="#2B3440"/>` +
+    `<rect x="4.6" y="10.5" width="10.8" height="8.6" rx="2" fill="${vest}" stroke="rgba(0,0,0,.25)" stroke-width=".6"/>` + (off ? "" : `<rect x="4.6" y="14" width="10.8" height="1.4" fill="#E9EEF2"/>`) +
+    `<circle cx="10" cy="7" r="3.6" fill="#D9A77E"/><path d="M5.6 6.4a4.4 4.4 0 0 1 8.8 0z" fill="${hat}"/>` + (off ? "" : `<rect x="4.4" y="5.8" width="11.2" height="1.3" fill="${hat}"/>`) + `</svg>`; };
+let pMode = "now";
+const pRows = ROSTER.map(p => { const b = document.createElement("button"); b.className = "prow"; b.dataset.id = p.id;
+  b.innerHTML = `${avatar(p)}<span><span class="nm">${p.name}</span><span class="rl">${p.role} · ${p.crew === OFF ? "văn phòng" : "tổ " + BRIG[p.crew]}</span></span><span class="st"><span class="pill"></span><span class="tm"></span></span>`;
+  b.addEventListener("click", () => selectPerson(p.id, true)); return b; });
+const pGrps = AREAS.map(a => { const h = document.createElement("div"); h.className = "pgrp"; h.innerHTML = `<span>${a}</span><span></span>`; return h; });
+{ const L = $("plist"); AREAS.forEach((_, ai) => { L.appendChild(pGrps[ai]);
+    ROSTER.filter(p => p.area === ai).sort((a, b) => a.crew - b.crew).forEach(p => L.appendChild(pRows[p.id])); }); }
+$("pAll").textContent = ROSTER.length;
+const setPMode = m => { pMode = m; $("pfNow").classList.toggle("on", m === "now"); $("pfAll").classList.toggle("on", m === "all"); lastPeople = ""; if (LAST_S) peoplePanel(LAST_S); };
+$("pfNow").onclick = () => setPMode("now"); $("pfAll").onclick = () => setPMode("all");
+let lastPeople = "", LAST_S = null;
+function peoplePanel(S) {
+  LAST_S = S;
+  const on = ROSTER.filter(p => onDuty(p, S)), nw = on.filter(p => p.crew !== OFF).length, no = on.length - nw;
+  $("pOn").textContent = `đang làm ca: ${on.length}`; $("pWork").textContent = nw; $("pOff").textContent = no;
+  const key = pMode + S.d + ":" + Math.floor(S.h * 60);
+  if (key === lastPeople) return; lastPeople = key;
+  const MONTH = ["tháng 1", "tháng 2", "tháng 3", "tháng 4", "tháng 5", "tháng 6", "tháng 7", "tháng 8", "tháng 9", "tháng 10", "tháng 11", "tháng 12"][new Date(S.d * DAY).getUTCMonth()];
+  ROSTER.forEach(p => { const r = pRows[p.id], duty = onDuty(p, S); r.hidden = pMode === "now" && !duty;
+    if (r.hidden) return; const t = hoursOf(p, S), pill = r.querySelector(".pill");
+    pill.textContent = dutyText(p, S); pill.className = "pill " + (duty ? "ok" : "off");
+    r.querySelector(".tm").textContent = `${duty ? "trong ca " + hm(sinceStart(p, S)) : "hôm nay " + hm(t.today)} · ${MONTH} ${fmt(Math.floor(t.month))} giờ`; });
+  AREAS.forEach((_, ai) => { const all = ROSTER.filter(p => p.area === ai), n = all.filter(p => onDuty(p, S)).length;
+    pGrps[ai].hidden = !all.length || (pMode === "now" && !n); pGrps[ai].lastChild.textContent = pMode === "now" ? `đang làm ca ${n}` : `đang làm ca ${n}/${all.length}`; });
+  if (cardId && cardId.startsWith("p:")) { const p = ROSTER[selP], t = hoursOf(p, S);
+    $("cP").textContent = `${dutyText(p, S)[0].toUpperCase() + dutyText(p, S).slice(1)}. ${onDuty(p, S) ? `На этой смене ${hm(sinceStart(p, S))}` : `Сегодня отработал ${hm(t.today)}`}, từ đầu tháng — ${fmt(Math.floor(t.month))} giờ.`; }
+}
+
+let lastPanel = 0, lastChart = -1;
+function loop() {
+  const S = frame(), now = performance.now();
+  if (now - lastPanel > 250) { panels(S, simNow()); lastPanel = now;
+    if (innerWidth > 1000 && !document.fullscreenElement && Math.abs(Math.max(480, $("side").offsetHeight) - box.clientHeight) > 3) { resize(); if (autoFit) fitAll(); } }   
+  const ck = S.d * 100 + Math.floor(S.h * 4);
+  if (ck !== lastChart) { lastChart = ck; chart("chAC", 1, D.acDay, "#F0935A", S); chart("chSh", 3, D.shellAU + D.shellB1, "#B97A45", S); chart("chBq", 6, D.bbqDay, "#D9A93A", S); chart("chCu", 2, D.cubeDay, "#4F8FD6", S); }
+  requestAnimationFrame(loop);
+}
+window.addEventListener("resize", () => { resize(); if (autoFit) fitAll(); lastChart = -1; });
+applyTheme(); resize(); fitAll(); loop();
+</script>
+<a href="index.html" id="vc-back" style="position:fixed;right:14px;bottom:14px;z-index:99999;background:#1E2124;color:#F3EDE0;font:600 14px -apple-system,Helvetica,Arial,sans-serif;text-decoration:none;padding:10px 16px;border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,.35)">← VIETCOCO</a><script>if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(function(){});</script></body>
+</html>
