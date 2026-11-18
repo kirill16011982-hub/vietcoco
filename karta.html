@@ -181,7 +181,7 @@ body.light .clock i { color:var(--ember); }
         </div>
       </section>
       <section class="panel people"><h2>Люди на фабрике <span class="onb" id="pOn">на смене: 0</span></h2>
-        <div class="psum"><div><b id="pWork">0</b><span>в цехах</span></div><div><b id="pOff">0</b><span>в офисе</span></div><div><b id="pAll">0</b><span>в списке, 3 смены и офис</span></div></div>
+        <div class="psum"><div><b id="pWork">0</b><span>в цехах</span></div><div><b id="pOff">0</b><span>в офисе</span></div><div><b id="pAll">0</b><span>в списке: 4 бригады и офис</span></div></div>
         <div class="pfilt"><button class="btn on" id="pfNow">Сейчас на смене</button><button class="btn" id="pfAll">Все</button></div>
         <div class="plist" id="plist"></div>
       </section>
@@ -210,7 +210,7 @@ body.light .clock i { color:var(--ember); }
 
 <script>
 "use strict";
-const D = {"scene": [{"k": "canopy", "id": "shed_b1", "x": 8, "y": 8, "w": 30, "d": 36, "h": 8, "c": "#E9B872", "piles": [[15, 14, 5, 3.6], [27, 14, 5, 3.2], [14, 26, 5, 3.8], [15, 37, 4.5, 3.0], [30, 24, 4, 2.6], [29, 36, 4, 2.4]]}, {"k": "tanks", "id": "tanks", "x": 42, "y": 8, "w": 21, "d": 18, "c": "#6FB6E8"}, {"k": "box", "id": "purif", "x": 47, "y": 30, "w": 16, "d": 14, "h": 7, "c": "#A9D3F0"}, {"k": "cyl", "id": "purif", "cx": 44.3, "cy": 40, "r": 1.3, "h": 14, "c": "#B9C4CE"}, {"k": "cyl", "id": "purif", "cx": 44.3, "cy": 34, "r": 1.3, "h": 11, "c": "#B9C4CE"}, {"k": "stack", "id": "hall_b1", "cx": 61.7, "cy": 48.1, "r": 1.1, "h": 27}, {"k": "hall", "id": "hall_b1", "x": 8, "y": 52, "w": 50, "d": 66, "h": 11, "rh": 4, "ridge": "y", "c": "#4F8FD6", "ds": [8, 34], "dw": [14, 44]}, {"k": "hall", "id": "fg_b1", "x": 8, "y": 121, "w": 50, "d": 10, "h": 7.5, "rh": 2, "ridge": "x", "c": "#63B97A", "ds": [10, 32]}, {"k": "canopy", "id": "shed_au", "x": 72, "y": 8, "w": 60, "d": 40, "h": 9, "c": "#E9B872", "piles": [[80, 15, 6, 4.2], [95, 14, 6, 4.4], [110, 15, 6, 4.0], [124, 14, 5, 3.4], [79, 29, 6, 4.4], [79, 41, 5, 3.6], [97, 30, 5, 3.0], [112, 32, 6, 3.8], [124, 34, 5, 3.2], [100, 42, 4, 2.6]]}, {"k": "hall", "id": "carb", "x": 72, "y": 56, "w": 60, "d": 44, "h": 12, "rh": 4, "ridge": "x", "c": "#F0935A", "ds": [10, 27, 44], "dw": [8, 28]}, {"k": "cyl", "id": "carb", "cx": 80, "cy": 54, "r": 0.8, "h": 14, "c": "#C9CED4"}, {"k": "cyl", "id": "carb", "cx": 94.5, "cy": 54, "r": 0.8, "h": 14, "c": "#C9CED4"}, {"k": "cyl", "id": "carb", "cx": 109, "cy": 54, "r": 0.8, "h": 14, "c": "#C9CED4"}, {"k": "cyl", "id": "carb", "cx": 123.5, "cy": 54, "r": 0.8, "h": 14, "c": "#C9CED4"}, {"k": "hall", "id": "act", "x": 140, "y": 56, "w": 52, "d": 44, "h": 17, "rh": 4, "ridge": "x", "c": "#E2643A", "ds": [8, 36], "dw": [10, 28]}, {"k": "hall", "id": "pack_au", "x": 140, "y": 106, "w": 52, "d": 20, "h": 9, "rh": 2.5, "ridge": "x", "c": "#63B97A", "ds": [8, 24, 40], "dw": [7]}, {"k": "box", "id": "boiler", "x": 140, "y": 30, "w": 25, "d": 18, "h": 10, "c": "#B8C2CC"}, {"k": "stack", "id": "boiler", "cx": 136.8, "cy": 39.8, "r": 1.4, "h": 34}, {"k": "cyl", "id": "cooling", "cx": 174.5, "cy": 39, "r": 5, "h": 8, "c": "#AEB9C4"}, {"k": "canopy", "id": "bbq", "x": 140, "y": 8, "w": 34, "d": 18, "h": 7, "c": "#F2C94C", "pc": "#2E2E2E", "piles": [[147, 12, 3.4, 2.2], [158, 12, 3.4, 2.4], [168, 12, 3.0, 2.0], [146, 21, 3, 2.0], [160, 21, 3, 2.0]]}, {"k": "los", "id": "los", "x": 178, "y": 8, "w": 16, "d": 20}, {"k": "hall", "id": "workshop", "x": 106, "y": 106, "w": 28, "d": 18, "h": 7, "rh": 2.2, "ridge": "x", "c": "#9AA5B1", "ds": [4, 16]}, {"k": "box", "id": "substation", "x": 72, "y": 106, "w": 16, "d": 12, "h": 5, "c": "#B8C2CC"}, {"k": "pool", "id": "pond", "x": 91, "y": 106, "w": 12, "d": 12}, {"k": "office", "id": "office", "x": 72, "y": 129, "w": 30, "d": 13, "h": 8, "c": "#F2F5F8"}, {"k": "weigh", "id": "weigh", "x": 176, "y": 132, "w": 18, "d": 10}], "info": {"shed_b1": ["Навес скорлупы Блока 1", "Блок 1", "≈1 100 м²", "У причала: короткий путь с баржи. Запас скорлупы около двух недель."], "hall_b1": ["Цех Блока 1", "Блок 1", "50 × 66 м ≈ 3 300 м²", "Уголь-сырец приходит по галерее из цеха карбонизации. Здесь мельница и смеситель, прессы кубиков, сушильные туннели, сортировка, упаковка и типография. 330 т кубиков в месяц."], "fg_b1": ["Склад готовых кубиков", "Блок 1", "≈500 м²", "Ближе к воротам: отсюда контейнеры уходят на дорогу промпарка."], "tanks": ["Резервуары уксуса", "Блок 1", "≈380 м²", "Рядом с узлом конденсации, в обваловании."], "purif": ["Очистка уксуса", "Блок 1", "≈290 м²", "Рядом с резервуарами; запуск с М25."], "shed_au": ["Навес скорлупы АУ", "Активированный уголь", "≈2 400 м²", "У причала. Вместе с навесом Блока 1 держит запас ≈3 400 т."], "carb": ["Цех карбонизации и дробления", "Активированный уголь", "60 × 44 м ≈ 2 640 м²", "Пять одинаковых печей карбонизации: линии №1–4 дают уголь-сырец под активацию (500–600 °C), печь №5 — уголь для кальянных кубиков (550–700 °C). Газ со всех печей идёт через конденсаторы: уксус-сырец собирается в общий коллектор и по трубе уходит в резервуары. Дробилки и грохоты 6 и 12 mesh."], "act": ["Цех активации", "Активированный уголь", "52 × 44 м ≈ 2 290 м²", "Шесть печей активации паром при 850–1 000°C, охлаждение, рассев 6×12. Высокий пролёт."], "pack_au": ["Упаковка и склад АУ", "Активированный уголь", "≈1 040 м²", "Фасовка в биг-бэги по 500 кг, склад на ≈2 недели отгрузок, лаборатория ОТК."], "boiler": ["Котельная и водоподготовка", "Активированный уголь", "≈450 м²", "У цеха активации: короткий паропровод. Тепло — от дожига пиролизного газа."], "cooling": ["Градирня", "Активированный уголь", "—", "Охлаждение оборотной воды."], "bbq": ["Брикеты барбекю", "Активированный уголь", "≈610 м²", "Навес рядом с дроблением: сюда идёт угольная мелочь."], "los": ["Локальные очистные", "Активированный уголь", "≈320 м²", "В нижней точке участка, у выпуска в сеть промпарка."], "workshop": ["Ремонтная мастерская и запчасти", "Общая зона", "≈500 м²", "Между цехами."], "substation": ["Подстанция", "Общая зона", "—", "У въезда сетей промпарка."], "pond": ["Пожарный водоём (PCCC)", "Общая зона", "—", "Запас воды для пожаротушения."], "office": ["Офис, лаборатория, столовая, раздевалки", "Общая зона", "≈720 м², 2 этажа", "У ворот, дальше от огневых цехов."], "villa": ["Гостевой дом", "Общая зона", "≈220 м², 2 этажа", "Для покупателей, партнёров и приезжих специалистов: со смотровой башенки и балкона видны все цеха. Проживание в промпарке нужно согласовать с управляющей компанией."], "weigh": ["Весовая", "Общая зона", "—", "Каждая партия скорлупы и каждая отгрузка взвешиваются."], "wharf": ["Причал", "Река", "—", "Баржи со скорлупой: 1–2 в день на полной мощности. Транспортёры подают сырьё к навесам."], "gate": ["Ворота", "Дорога промпарка", "—", "Готовая продукция уходит контейнерами, здесь же вход персонала."]}, "col": {"raw": "#E9B872", "b1": "#4F8FD6", "ac": "#F0935A", "act": "#E2643A", "fg": "#63B97A", "util": "#9AA5B1", "office": "#F2F5F8", "liq": "#6FB6E8", "bbq": "#F2C94C"}, "acDay": 27.397260273972602, "cubeDay": 10.849315068493151, "cubeMonth": 330, "vinDay": 10.849315068493151, "refDay": 0.9863013698630136, "refMonth": 30, "bbqDay": 5.1726027397260275, "bbqMonth": 157.33333333333334, "priceWv": 350, "priceRef": 900, "priceBbq": 550, "revYear": 40354400.0, "ebYear": 21351583.25925926, "ebK": {"b1": 0.47734499466206776, "ac": 0.5431512449223417, "bbq": 0.4938443759630201, "wvr": 0.6363636363636364}, "shellB1": 44.200913242009136, "shellAU": 202.94266869609336, "priceAC": 3100, "priceCube": 1700, "priceShell": 100};
+const D = {"scene": [{"k": "canopy", "id": "shed_b1", "x": 8, "y": 8, "w": 30, "d": 36, "h": 8, "c": "#E9B872", "piles": [[15, 14, 5, 3.6], [27, 14, 5, 3.2], [14, 26, 5, 3.8], [15, 37, 4.5, 3.0], [30, 24, 4, 2.6], [29, 36, 4, 2.4]]}, {"k": "tanks", "id": "tanks", "x": 42, "y": 8, "w": 21, "d": 18, "c": "#6FB6E8"}, {"k": "box", "id": "purif", "x": 47, "y": 30, "w": 16, "d": 14, "h": 7, "c": "#A9D3F0"}, {"k": "cyl", "id": "purif", "cx": 44.3, "cy": 40, "r": 1.3, "h": 14, "c": "#B9C4CE"}, {"k": "cyl", "id": "purif", "cx": 44.3, "cy": 34, "r": 1.3, "h": 11, "c": "#B9C4CE"}, {"k": "stack", "id": "hall_b1", "cx": 61.7, "cy": 48.1, "r": 1.1, "h": 27}, {"k": "hall", "id": "hall_b1", "x": 8, "y": 52, "w": 50, "d": 66, "h": 11, "rh": 4, "ridge": "y", "c": "#4F8FD6", "ds": [8, 34], "dw": [14, 44]}, {"k": "hall", "id": "fg_b1", "x": 8, "y": 121, "w": 50, "d": 10, "h": 7.5, "rh": 2, "ridge": "x", "c": "#63B97A", "ds": [10, 32]}, {"k": "canopy", "id": "shed_au", "x": 72, "y": 8, "w": 60, "d": 40, "h": 9, "c": "#E9B872", "piles": [[80, 15, 6, 4.2], [95, 14, 6, 4.4], [110, 15, 6, 4.0], [124, 14, 5, 3.4], [79, 29, 6, 4.4], [79, 41, 5, 3.6], [97, 30, 5, 3.0], [112, 32, 6, 3.8], [124, 34, 5, 3.2], [100, 42, 4, 2.6]]}, {"k": "hall", "id": "carb", "x": 72, "y": 56, "w": 60, "d": 44, "h": 12, "rh": 4, "ridge": "x", "c": "#F0935A", "ds": [10, 27, 44], "dw": [8, 28]}, {"k": "cyl", "id": "carb", "cx": 80, "cy": 54, "r": 0.8, "h": 14, "c": "#C9CED4"}, {"k": "cyl", "id": "carb", "cx": 94.5, "cy": 54, "r": 0.8, "h": 14, "c": "#C9CED4"}, {"k": "cyl", "id": "carb", "cx": 109, "cy": 54, "r": 0.8, "h": 14, "c": "#C9CED4"}, {"k": "cyl", "id": "carb", "cx": 123.5, "cy": 54, "r": 0.8, "h": 14, "c": "#C9CED4"}, {"k": "hall", "id": "act", "x": 140, "y": 56, "w": 52, "d": 44, "h": 17, "rh": 4, "ridge": "x", "c": "#E2643A", "ds": [8, 36], "dw": [10, 28]}, {"k": "hall", "id": "pack_au", "x": 140, "y": 106, "w": 52, "d": 20, "h": 9, "rh": 2.5, "ridge": "x", "c": "#63B97A", "ds": [8, 24, 40], "dw": [7]}, {"k": "box", "id": "boiler", "x": 140, "y": 30, "w": 25, "d": 18, "h": 10, "c": "#B8C2CC"}, {"k": "stack", "id": "boiler", "cx": 136.8, "cy": 39.8, "r": 1.4, "h": 34}, {"k": "cyl", "id": "cooling", "cx": 174.5, "cy": 39, "r": 5, "h": 8, "c": "#AEB9C4"}, {"k": "canopy", "id": "bbq", "x": 140, "y": 8, "w": 34, "d": 18, "h": 7, "c": "#F2C94C", "pc": "#2E2E2E", "piles": [[147, 12, 3.4, 2.2], [158, 12, 3.4, 2.4], [168, 12, 3.0, 2.0], [146, 21, 3, 2.0], [160, 21, 3, 2.0]]}, {"k": "los", "id": "los", "x": 178, "y": 8, "w": 16, "d": 20}, {"k": "hall", "id": "workshop", "x": 106, "y": 106, "w": 28, "d": 18, "h": 7, "rh": 2.2, "ridge": "x", "c": "#9AA5B1", "ds": [4, 16]}, {"k": "box", "id": "substation", "x": 72, "y": 106, "w": 16, "d": 12, "h": 5, "c": "#B8C2CC"}, {"k": "pool", "id": "pond", "x": 91, "y": 106, "w": 12, "d": 12}, {"k": "office", "id": "office", "x": 72, "y": 129, "w": 30, "d": 13, "h": 8, "c": "#F2F5F8"}, {"k": "weigh", "id": "weigh", "x": 176, "y": 132, "w": 18, "d": 10}], "info": {"shed_b1": ["Навес скорлупы Блока 1", "Блок 1", "≈1 100 м²", "У причала: короткий путь с баржи. Запас скорлупы около двух недель."], "hall_b1": ["Цех Блока 1", "Блок 1", "50 × 66 м ≈ 3 300 м²", "Уголь-сырец приходит по галерее из цеха карбонизации. Здесь мельница и смеситель, прессы кубиков, сушильные туннели, сортировка, упаковка и типография. 330 т кубиков в месяц."], "fg_b1": ["Склад готовых кубиков", "Блок 1", "≈500 м²", "Ближе к воротам: отсюда контейнеры уходят на дорогу промпарка."], "tanks": ["Резервуары уксуса", "Блок 1", "≈380 м²", "Рядом с узлом конденсации, в обваловании."], "purif": ["Очистка уксуса", "Блок 1", "≈290 м²", "Рядом с резервуарами; запуск с М25."], "shed_au": ["Навес скорлупы АУ", "Активированный уголь", "≈2 400 м²", "У причала. Вместе с навесом Блока 1 держит запас ≈3 400 т."], "carb": ["Цех карбонизации и дробления", "Активированный уголь", "60 × 44 м ≈ 2 640 м²", "Пять одинаковых печей карбонизации: линии №1–4 дают уголь-сырец под активацию (500–600 °C), печь №5 — уголь для кальянных кубиков (550–700 °C). Газ со всех печей идёт через конденсаторы: уксус-сырец собирается в общий коллектор и по трубе уходит в резервуары. Дробилки и грохоты 6 и 12 mesh."], "act": ["Цех активации", "Активированный уголь", "52 × 44 м ≈ 2 290 м²", "Шесть печей активации паром при 850–1 000°C, охлаждение, рассев 6×12. Высокий пролёт."], "pack_au": ["Упаковка и склад АУ", "Активированный уголь", "≈1 040 м²", "Фасовка в биг-бэги по 500 кг, склад на ≈2 недели отгрузок, лаборатория ОТК."], "boiler": ["Котельная и водоподготовка", "Активированный уголь", "≈450 м²", "У цеха активации: короткий паропровод. Тепло — от дожига пиролизного газа."], "cooling": ["Градирня", "Активированный уголь", "—", "Охлаждение оборотной воды."], "bbq": ["Брикеты барбекю", "Активированный уголь", "≈610 м²", "Навес рядом с дроблением: сюда идёт угольная мелочь."], "los": ["Локальные очистные", "Активированный уголь", "≈320 м²", "В нижней точке участка, у выпуска в сеть промпарка."], "workshop": ["Ремонтная мастерская и запчасти", "Общая зона", "≈500 м²", "Между цехами."], "substation": ["Подстанция", "Общая зона", "—", "У въезда сетей промпарка."], "pond": ["Пожарный водоём (PCCC)", "Общая зона", "—", "Запас воды для пожаротушения."], "office": ["Офис, лаборатория, столовая, раздевалки", "Общая зона", "≈720 м², 2 этажа", "У ворот, дальше от огневых цехов."], "villa": ["Гостевой дом", "Общая зона", "≈220 м², 2 этажа", "Для покупателей, партнёров и приезжих специалистов: со смотровой башенки и балкона видны все цеха. Проживание в промпарке нужно согласовать с управляющей компанией."], "weigh": ["Весовая", "Общая зона", "—", "Каждая партия скорлупы и каждая отгрузка взвешиваются."], "wharf": ["Причал", "Река", "—", "Баржи со скорлупой: 1–2 в день на полной мощности. Транспортёры подают сырьё к навесам."], "gate": ["Ворота", "Дорога промпарка", "—", "Готовая продукция уходит контейнерами, здесь же вход персонала."]}, "col": {"raw": "#E9B872", "b1": "#4F8FD6", "ac": "#F0935A", "act": "#E2643A", "fg": "#63B97A", "util": "#9AA5B1", "office": "#F2F5F8", "liq": "#6FB6E8", "bbq": "#F2C94C"}, "acDay": 27.397260273972602, "cubeDay": 10.849315068493151, "cubeMonth": 330, "vinDay": 10.849315068493151, "refDay": 0.9863013698630136, "refMonth": 30, "bbqDay": 4.7647409172126265, "bbqMonth": 144.92753623188406, "priceWv": 350, "priceRef": 900, "priceBbq": 550, "revYear": 40272521.73913044, "ebYear": 20326989.9194847, "ebK": {"b1": 0.46254011661328726, "ac": 0.5162585228819282, "bbq": 0.46216936363636363, "wvr": 0.6363636363636364}, "shellB1": 44.200913242009136, "shellAU": 220.58985727836233, "priceAC": 3100, "priceCube": 1700, "priceShell": 100};
 const $ = id => document.getElementById(id);
 const fmt = (x, d = 0) => x.toLocaleString("ru-RU", { minimumFractionDigits: d, maximumFractionDigits: d });
 const rnd = a => { const x = Math.sin(a * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
@@ -251,7 +251,11 @@ const TRUCKS = [
   { id: "t5", t0: 15.2, kind: "wv", plate: "84C-088.31", c: "#C9CED4" },
 ];
 const T_IN = 0.35, T_LOAD = 1.6, T_OUT = 0.35;
-const SHIFTS = [["А", 6, 14], ["Б", 14, 22], ["В", 22, 30]];
+const SHIFTS = [["утренняя", 6, 14], ["дневная", 14, 22], ["ночная", 22, 30]];
+// 4 бригады на 3 смены (18.11.2026): по закону Вьетнама не больше 48 ч в неделю. Бригады А, Б, В держат свою смену
+// и отдыхают каждый 4-й день; в этот день их смену закрывает подменная бригада Г. В среднем 42 ч в неделю у каждого.
+const BRIG = ["А", "Б", "В", "Г"], OFF = 4;
+const crewOn = (slot, day) => (((day % 4) + 4) % 4) === slot ? 3 : slot;   // какая бригада работает смену slot, начатую в день day
 const shiftAt = h => h >= 6 && h < 14 ? 0 : h >= 14 && h < 22 ? 1 : 2;
 const maintKiln = d => d % 6;                                  // какая печь активации сегодня на осмотре, 10:00–12:00
 
@@ -301,14 +305,14 @@ const POSTS = [
 const WALKS = [[[80, 64.2], [110, 64.2]], [[110, 80.2], [80, 80.2]], [[148, 64.5], [178, 64.5]], [[178, 78.5], [148, 78.5]], [[148, 92.5], [178, 92.5]],
   [[14, 103.5], [48, 103.5]], [[156, 114], [184, 114]], [[74, 135.2], [87, 135.2]], [[110, 115], [130, 115]]];
 const OFFICE = [[75.2, 132.6], [78.7, 132.6], [82.2, 132.6], [85.7, 132.6], [75.2, 138.2], [78.7, 138.2], [82.2, 138.2]];
-const SHIFT_HAT = ["#F2C14E", "#F0935A", "#7FC8D8"];
+const SHIFT_HAT = ["#F2C14E", "#F0935A", "#7FC8D8", "#B9A3E3"];
 const WALK_ROLES = ["обходчик карбонизации", "обходчик карбонизации", "обходчик печей активации", "обходчик печей активации", "обходчик печей активации",
   "мастер смены Б1", "кладовщик склада АУ", "начальник смены", "дежурный ремонтник"];
 const OFFICE_ROLES = ["директор фабрики", "главный инженер", "бухгалтер", "менеджер по продажам", "логист", "закупка скорлупы", "кадры и охрана труда"];
 const AREAS = ["Блок 1", "Активированный уголь", "Брикеты барбекю", "Уксус", "Службы", "Офис"];
 const areaOf = r => /брикет/.test(r) ? 2 : /уксус/.test(r) ? 3 : /Б1|мельница|кубик|^упаковка$/.test(r) ? 0 : /ОТК|весовая|охрана ворот|мастерская|электрик|подстанция|начальник|ремонтник/.test(r) ? 4 : 1;
 const SURN = ["Нгуен", "Чан", "Ле", "Фам", "Хоанг", "Фан", "Ву", "Данг", "Буй", "До", "Хо", "Нго", "Зыонг", "Ли"];
-// штат: 20 рабочих в каждой из 3 смен и 2 в офисе; [пост или маршрут, должность, участок]
+// штат: 20 рабочих в смену, 4 бригады, и 2 в офисе; [пост или маршрут, должность, участок]
 const STAFF = {
   posts: [[0, "оператор печи №5 (Блок 1) и уксуса", 0], [2, "мельница и смеситель", 0], [3, "пресс кубиков", 0], [5, "сушка кубиков", 0],
     [6, "сортировка и упаковка кубиков", 0], [7, "сортировка и упаковка кубиков", 0],
@@ -325,33 +329,44 @@ const ROSTER = (() => {
   const pairs = []; NAMES.forEach((g, i) => SURN.forEach((f, j) => pairs.push([f, g, rnd(i * 31.7 + j * 7.3)])));
   pairs.sort((a, b) => a[2] - b[2]); let n = 0; const R = [];
   const add = (crew, kind, slot, role, area) => { const [f, g] = pairs[n++]; R.push({ id: R.length, crew, kind, slot, role, area, given: g, name: f + " " + g }); };
-  for (let c = 0; c < 3; c++) { STAFF.posts.forEach(([i, r, a]) => add(c, "post", i, r, a)); STAFF.walks.forEach(([i, r, a]) => add(c, "walk", i, r, a)); }
-  STAFF.office.forEach(([i, r]) => add(3, "office", i, r, 5));
+  for (let c = 0; c < 4; c++) { STAFF.posts.forEach(([i, r, a]) => add(c, "post", i, r, a)); STAFF.walks.forEach(([i, r, a]) => add(c, "walk", i, r, a)); }
+  STAFF.office.forEach(([i, r]) => add(OFF, "office", i, r, 5));
   return R;
 })();
 const weekday = d => new Date(d * DAY).getUTCDay();
 const officeOpen = S => weekday(S.d) !== 0 && S.h >= 8 && S.h < 17;          // офис пн–сб 08:00–17:00
-const onDuty = (p, S) => p.crew === 3 ? officeOpen(S) : p.crew === S.sh;
+const shiftDay = S => S.h < 6 ? S.d - 1 : S.d;                               // ночная смена 22–06 начата накануне
+const onDuty = (p, S) => p.crew === OFF ? officeOpen(S) : p.crew === crewOn(S.sh, shiftDay(S));
 // сколько часов человек отработал сегодня (с 00:00) и с начала месяца
 function hoursOf(p, S) {
   const h = S.h, t = new Date(S.d * DAY), dom = t.getUTCDate();
-  if (p.crew === 3) { const today = weekday(S.d) === 0 ? 0 : clamp(h - 8, 0, 4) + clamp(h - 13, 0, 4);    // обед 12–13
+  if (p.crew === OFF) { const today = weekday(S.d) === 0 ? 0 : clamp(h - 8, 0, 4) + clamp(h - 13, 0, 4);    // обед 12–13
     let days = 0; for (let i = 1; i < dom; i++) if (weekday(S.d - i) !== 0) days++;
     return { today, month: days * 8 + today }; }
-  const today = p.crew === 0 ? clamp(h - 6, 0, 8) : p.crew === 1 ? clamp(h - 14, 0, 8) : clamp(h, 0, 6) + clamp(h - 22, 0, 2);
-  return { today, month: (dom - 1) * 8 + today };
+  const now = S.d * 24 + h, t0 = S.d * 24, m0 = (S.d - (dom - 1)) * 24; let today = 0, month = 0;
+  for (let D = S.d - dom; D <= S.d; D++) for (let s = 0; s < 3; s++) {
+    if (crewOn(s, D) !== p.crew) continue;
+    const a = D * 24 + SHIFTS[s][1], b = D * 24 + SHIFTS[s][2];
+    month += Math.max(0, Math.min(b, now) - Math.max(a, m0)); today += Math.max(0, Math.min(b, now) - Math.max(a, t0)); }
+  return { today, month };
 }
 function dutyText(p, S) {
   const h = S.h;
-  if (p.crew === 3) return weekday(S.d) === 0 ? "выходной" : officeOpen(S) ? "на месте с 08:00" : h < 8 ? "придёт в 08:00" : "день закрыт в 17:00";
-  const [, a, b] = SHIFTS[p.crew];
-  if (p.crew === S.sh) return `смена открыта ${hhmm(a)}`;
-  if (p.crew === 0) return h >= 14 ? "смена закрыта в 14:00" : "заступит в 06:00";
-  if (p.crew === 1) return h >= 22 ? "смена закрыта в 22:00" : "заступит в 14:00";
-  return "заступит в 22:00";
+  if (p.crew === OFF) return weekday(S.d) === 0 ? "выходной" : officeOpen(S) ? "на месте с 08:00" : h < 8 ? "придёт в 08:00" : "день закрыт в 17:00";
+  if (onDuty(p, S)) return `смена открыта ${hhmm(SHIFTS[S.sh][1])}`;
+  const now = S.d * 24 + h, worked = hoursOf(p, S).today > 0;
+  for (let D = S.d - 1; D <= S.d + 4; D++) for (let s = 0; s < 3; s++) {
+    if (crewOn(s, D) !== p.crew) continue;
+    const a = D * 24 + SHIFTS[s][1], t = hhmm(SHIFTS[s][1]);
+    if (a <= now) continue;
+    if (a < (S.d + 1) * 24) return `заступит в ${t}`;
+    if (a < (S.d + 2) * 24) return worked ? `смена закрыта, завтра в ${t}` : `выходной, завтра в ${t}`;
+    return "выходной";
+  }
+  return "выходной";
 }
 // сколько идёт текущая смена (для тех, кто на смене)
-const sinceStart = (p, S) => p.crew === 3 ? clamp(S.h - 8, 0, 4) + clamp(S.h - 13, 0, 4) : (S.h - SHIFTS[p.crew][1] + 24) % 24;
+const sinceStart = (p, S) => p.crew === OFF ? clamp(S.h - 8, 0, 4) + clamp(S.h - 13, 0, 4) : (S.h - SHIFTS[S.sh][1] + 24) % 24;
 const hm = x => { const m = Math.round(x * 60); return m < 60 ? `${m} мин` : `${Math.floor(m / 60)} ч ${String(m % 60).padStart(2, "0")} мин`; };
 
 // ---------- геометрия карты (метры: x — восток, y — север; участок 200 × 150 м, река на юге)
@@ -560,7 +575,7 @@ function pick(px, py) {
 $("cardX").onclick = () => { $("card").hidden = true; cardId = null; selP = null; markRow(); };
 function selectPerson(id, fly) {
   const p = ROSTER[id]; selP = id; cardId = "p:" + id; markRow();
-  $("cZ").textContent = p.crew === 3 ? "Офис · пн–сб 08:00–17:00" : `Смена ${SHIFTS[p.crew][0]} · ${hhmm(SHIFTS[p.crew][1])}–${hhmm(SHIFTS[p.crew][2])} · ${AREAS[p.area]}`;
+  $("cZ").textContent = p.crew === OFF ? "Офис · пн–сб 08:00–17:00" : p.crew < 3 ? `Бригада ${BRIG[p.crew]} · ${SHIFTS[p.crew][0]} смена ${hhmm(SHIFTS[p.crew][1])}–${hhmm(SHIFTS[p.crew][2])}, каждый 4-й день выходной · ${AREAS[p.area]}` : `Бригада Г · подменная: выходит в смену бригады, у которой выходной · ${AREAS[p.area]}`;
   $("cT").textContent = p.name; $("cA").textContent = p.role; $("cP").textContent = ""; $("card").hidden = false;
   if (fly) { const q = NOW_P.find(q => q.p.id === id); if (q) { autoFit = false; k = Math.max(k, 11); cx = q.x; cy = q.y + 2; } }
   if (LAST_S) { lastPeople = ""; peoplePanel(LAST_S); }
@@ -586,7 +601,7 @@ function state(ms) {
   const tankK = clamp(0.35 + (vin - (wvGone ? D.vinDay * 0.9 : 0)) / (D.vinDay * 2.2), 0.15, 0.95);   // наполнение резервуаров
   // выручка за сутки = выпуск × цена по каждому продукту; за год сходится с финмоделью
   const rev = ac * D.priceAC + cubes * D.priceCube + (vin - ref) * D.priceWv + ref * D.priceRef + bbq * D.priceBbq;
-  // EBITDA = выручка каждого блока × его доля EBITDA из финмодели (АУ ≈54%, Блок 1 ≈47%, брикеты ≈49%, очистка уксуса ≈66%)
+  // EBITDA = выручка каждого блока × его доля EBITDA из финмодели (доли считаются из модели)
   const ebitda = ac * D.priceAC * D.ebK.ac + (cubes * D.priceCube + vin * D.priceWv) * D.ebK.b1 + ref * (D.priceRef - D.priceWv) * D.ebK.wvr + bbq * D.priceBbq * D.ebK.bbq;
   return { h, d, sh, ac, cubes, bbq, vin, ref, shell, barges, trucks, cont, contB1, bbqGone, wvGone, bbqStock, tankK, mk, maint, stockBags, rev, ebitda };
 }
@@ -594,7 +609,7 @@ function state(ms) {
 // ---------- журнал: события суток до текущей минуты
 function events(S) {
   const E = [], d = S.d;
-  const n0 = CREW_N; SHIFTS.forEach(([n, a], i) => E.push([a % 24, `Смена ${n} заступила: ${n0} ${plural(n0, "человек", "человека", "человек")} в цехах${i === 0 ? `, ${OFFICE_N} в офисе с 08:00` : ""}`, i]));
+  const n0 = CREW_N; SHIFTS.forEach(([n, a], i) => E.push([a % 24, `Бригада ${BRIG[crewOn(i, d)]} заступила на ${n} смену: ${n0} ${plural(n0, "человек", "человека", "человек")} в цехах${i === 0 ? `, ${OFFICE_N} в офисе с 08:00` : ""}`, i]));
   BARGES.forEach(b => { const q = bargeState(b, 0, d), dock = b.to === "au" ? "причалу АУ" : "причалу Блока 1";
     E.push([b.t0, `Баржа «${b.name}» идёт к ${dock}`]); E.push([b.t0 + B_IN, `«${b.name}» у причала, кран начал разгрузку`]);
     E.push([b.t0 + B_IN + B_UNLOAD, `Принято ${fmt(q.tons)} т скорлупы с «${b.name}», навес пополнен`]); });
@@ -832,7 +847,7 @@ function frame() {
   // люди текущей смены (каска — цвет смены), имена при приближении
   NOW_P = ROSTER.filter(p => onDuty(p, S)).map(p => Object.assign({ p }, personAt(p))).sort((a, b) => b.y - a.y);
   const names = k > 4.6;
-  NOW_P.forEach(q => { const off = q.p.crew === 3, sel = selP === q.p.id;
+  NOW_P.forEach(q => { const off = q.p.crew === OFF, sel = selP === q.p.id;
     figure(q.x, q.y, { walk: q.walk, ph: q.p.id, shirt: off ? "#F4F2EC" : "#2E6FB0", vest: off ? "#F4F2EC" : "#F07C2A", stripe: !off, hat: off ? null : SHIFT_HAT[q.p.crew], sel,
       name: names || sel ? q.p.given : null }); });
 
@@ -901,7 +916,7 @@ function panels(S, ms) {
   $("tCubes").textContent = fmt(S.cubes, 1); $("tCont").textContent = fmt(S.cont + S.contB1);
   $("tBbq").textContent = fmt(S.bbq, 1); $("tVin").textContent = fmt(S.vin, 1); $("tVinS").textContent = `т уксуса, из них ${fmt(S.ref, 1)} т очищенного`; $("tRev").textContent = "$" + fmt(S.rev);
   $("tEb").textContent = "$" + fmt(S.ebitda); $("tEbS").textContent = `EBITDA за сутки · ${S.rev ? Math.round(S.ebitda / S.rev * 100) : 0}% выручки`;
-  const [n, a, b] = SHIFTS[S.sh]; $("shName").textContent = `${n} · ${hhmm(a)}–${hhmm(b)}`;
+  const [n, a, b] = SHIFTS[S.sh]; $("shName").textContent = `${n} · ${hhmm(a)}–${hhmm(b)} · бригада ${BRIG[crewOn(S.sh, shiftDay(S))]}`;
   $("shPeople").textContent = `${CREW_N} в цехах` + (officeOpen(S) ? ` + ${OFFICE_N} в офисе` : "");
   $("shAct").textContent = S.maint ? `5 из 6 · печь №${S.mk + 1} на осмотре` : "6 из 6 · 850–1 000 °C";
   $("shAct").className = "pill " + (S.maint ? "warn" : "hot");
@@ -979,16 +994,16 @@ document.querySelectorAll("canvas.chart").forEach(c => {
 $("foot").textContent = `На графиках число на столбике — сколько тонн сделано за сутки; наведите мышь или нажмите на столбик — покажет дату, во что это превращается и выручку. Нормы из финмодели проекта: активированный уголь ${fmt(D.acDay * 365)} т/год (≈${fmt(D.acDay, 1)} т в сутки, по $${fmt(D.priceAC)}/т), ` +
   `кальянные кубики ${D.cubeMonth} т/мес (по $${fmt(D.priceCube)}/т), древесный уксус ${D.cubeMonth} т/мес (по $${fmt(D.priceWv)}/т, из них ${D.refMonth} т очищенного по $${fmt(D.priceRef)}/т), ` +
   `брикеты барбекю ${fmt(D.bbqMonth)} т/мес (по $${fmt(D.priceBbq)}/т); за год выручка $${fmt(D.revYear / 1e6, 2)} млн и EBITDA $${fmt(D.ebYear / 1e6, 1)} млн — как в финмодели на 2029 год. Скорлупа с барж ≈${fmt(D.shellAU + D.shellB1)} т в сутки (по $${fmt(D.priceShell)}/т с доставкой). ` +
-  `Сутки отличаются от нормы на ±7%. Имена рабочих, названия барж и номера фур вымышлены; 20 рабочих в смену (3 смены) и 2 в офисе, часы считаются по графику смен. Планировка — 3D-эскиз генплана, оборудование — эскиз до проекта.`;
+  `Сутки отличаются от нормы на ±7%. Имена рабочих, названия барж и номера фур вымышлены; 20 рабочих в смену, 3 смены по 8 часов и 4 бригады — у каждого в среднем 42 часа в неделю (по закону Вьетнама не больше 48), и 2 в офисе; часы считаются по графику бригад. Планировка — 3D-эскиз генплана, оборудование — эскиз до проекта.`;
 
 // значок-фигурка для строки списка: каска цвета смены и жилет; у офиса — белая рубашка
-const avatar = p => { const off = p.crew === 3, hat = off ? "#2A2420" : SHIFT_HAT[p.crew], vest = off ? "#F4F2EC" : "#F07C2A";
+const avatar = p => { const off = p.crew === OFF, hat = off ? "#2A2420" : SHIFT_HAT[p.crew], vest = off ? "#F4F2EC" : "#F07C2A";
   return `<svg width="26" height="30" viewBox="0 0 20 24" aria-hidden="true"><rect x="6.3" y="18.5" width="3" height="5" fill="#2B3440"/><rect x="10.7" y="18.5" width="3" height="5" fill="#2B3440"/>` +
     `<rect x="4.6" y="10.5" width="10.8" height="8.6" rx="2" fill="${vest}" stroke="rgba(0,0,0,.25)" stroke-width=".6"/>` + (off ? "" : `<rect x="4.6" y="14" width="10.8" height="1.4" fill="#E9EEF2"/>`) +
     `<circle cx="10" cy="7" r="3.6" fill="#D9A77E"/><path d="M5.6 6.4a4.4 4.4 0 0 1 8.8 0z" fill="${hat}"/>` + (off ? "" : `<rect x="4.4" y="5.8" width="11.2" height="1.3" fill="${hat}"/>`) + `</svg>`; };
 let pMode = "now";
 const pRows = ROSTER.map(p => { const b = document.createElement("button"); b.className = "prow"; b.dataset.id = p.id;
-  b.innerHTML = `${avatar(p)}<span><span class="nm">${p.name}</span><span class="rl">${p.role} · ${p.crew === 3 ? "офис" : "смена " + SHIFTS[p.crew][0]}</span></span><span class="st"><span class="pill"></span><span class="tm"></span></span>`;
+  b.innerHTML = `${avatar(p)}<span><span class="nm">${p.name}</span><span class="rl">${p.role} · ${p.crew === OFF ? "офис" : "бригада " + BRIG[p.crew]}</span></span><span class="st"><span class="pill"></span><span class="tm"></span></span>`;
   b.addEventListener("click", () => selectPerson(p.id, true)); return b; });
 const pGrps = AREAS.map(a => { const h = document.createElement("div"); h.className = "pgrp"; h.innerHTML = `<span>${a}</span><span></span>`; return h; });
 { const L = $("plist"); AREAS.forEach((_, ai) => { L.appendChild(pGrps[ai]);
@@ -999,7 +1014,7 @@ $("pfNow").onclick = () => setPMode("now"); $("pfAll").onclick = () => setPMode(
 let lastPeople = "", LAST_S = null;
 function peoplePanel(S) {
   LAST_S = S;
-  const on = ROSTER.filter(p => onDuty(p, S)), nw = on.filter(p => p.crew !== 3).length, no = on.length - nw;
+  const on = ROSTER.filter(p => onDuty(p, S)), nw = on.filter(p => p.crew !== OFF).length, no = on.length - nw;
   $("pOn").textContent = `на смене: ${on.length}`; $("pWork").textContent = nw; $("pOff").textContent = no;
   const key = pMode + S.d + ":" + Math.floor(S.h * 60);
   if (key === lastPeople) return; lastPeople = key;
